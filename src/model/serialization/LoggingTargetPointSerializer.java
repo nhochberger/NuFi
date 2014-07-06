@@ -19,9 +19,11 @@ public class LoggingTargetPointSerializer implements TargetPointSerializer {
 
 	@Override
 	public void serialize(List<TargetPoint> targets) {
+		TargetPointFormatter formatter = new TargetPointFormatter();
 		int i = 1;
 		for (TargetPoint point : targets) {
-			logger.info(String.valueOf(i) + "[" + String.valueOf(point.getxCoordinate()) + ":" + String.valueOf(point.getyCoordinate()) + "]");
+			logger.info(formatter.format(i, point));
+			i++;
 		}
 	}
 }
