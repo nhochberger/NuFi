@@ -4,7 +4,7 @@ public class TargetPoint {
 
 	private final int xCoordinate;
 	private final int yCoordinate;
-	
+
 	public TargetPoint(int xCoordinate, int yCoordinate) {
 		super();
 		this.xCoordinate = xCoordinate;
@@ -17,5 +17,10 @@ public class TargetPoint {
 
 	public int getyCoordinate() {
 		return yCoordinate;
+	}
+
+	@Override
+	public String toString() {
+		return "(" + xCoordinate + ":" + yCoordinate + ")";
 	}
 }
