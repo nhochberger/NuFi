@@ -4,6 +4,7 @@ import hochberger.utilities.application.session.BasicSession;
 import hochberger.utilities.files.Closer;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
@@ -31,10 +32,11 @@ public class FileWritingTargetPointSerializer implements TargetPointSerializer {
 	@Override
 	public void serialize(List<TargetPoint> targets) throws IOException {
 		logger().info("Beginning to serialize " + targets.size() + " targets");
-		logger().info("Destination: " + filepath);
 		BufferedWriter writer = null;
 		try {
-			writer = new BufferedWriter(new FileWriter(filepath));
+			File destination = new File(filepath);
+			logger().info("Destination: " + destination.getAbsolutePath());
+			writer = new BufferedWriter(new FileWriter(destination));
 			writeTargets(targets, writer);
 		} finally {
 			Closer.close(writer);
