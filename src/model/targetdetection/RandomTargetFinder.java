@@ -1,27 +1,25 @@
 package model.targetdetection;
 
 import hochberger.utilities.application.session.BasicSession;
+import hochberger.utilities.application.session.SessionBasedObject;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import org.apache.log4j.Logger;
-
-public class RandomTargetFinder implements TargetFinder {
+public class RandomTargetFinder extends SessionBasedObject implements
+		TargetFinder {
 
 	private final List<TargetPoint> targets;
-	private final Logger logger;
 
 	public RandomTargetFinder(BasicSession session) {
-		super();
+		super(session);
 		targets = new ArrayList<TargetPoint>();
-		logger = session.getLogger();
 	}
 
 	@Override
 	public void findTargets() {
-		logger.info("Generating random targets");
+		logger().info("Generating random targets");
 		generateRandomTargets(10);
 	}
 
@@ -31,10 +29,10 @@ public class RandomTargetFinder implements TargetFinder {
 			TargetPoint newTarget = new TargetPoint(
 					targetGenerator.nextInt(1000),
 					targetGenerator.nextInt(1000));
-			logger.info("Found target: " + newTarget);
+			logger().info("Found target: " + newTarget);
 			targets.add(newTarget);
 		}
-		logger.info("Found " + targets.size() + " targets");
+		logger().info("Found " + targets.size() + " targets");
 	}
 
 	@Override

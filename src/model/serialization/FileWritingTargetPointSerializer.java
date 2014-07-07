@@ -1,6 +1,7 @@
 package model.serialization;
 
 import hochberger.utilities.application.session.BasicSession;
+import hochberger.utilities.application.session.SessionBasedObject;
 import hochberger.utilities.files.Closer;
 
 import java.io.BufferedWriter;
@@ -11,22 +12,15 @@ import java.util.List;
 
 import model.targetdetection.TargetPoint;
 
-import org.apache.log4j.Logger;
-
-public class FileWritingTargetPointSerializer implements TargetPointSerializer {
+public class FileWritingTargetPointSerializer extends SessionBasedObject
+		implements TargetPointSerializer {
 
 	private String filepath;
-	private BasicSession session;
 
 	public FileWritingTargetPointSerializer(BasicSession session) {
-		super();
+		super(session);
 		this.filepath = String.valueOf(session
 				.getSessionVariable("destination"));
-		this.session = session;
-	}
-
-	private Logger logger() {
-		return session.getLogger();
 	}
 
 	@Override
