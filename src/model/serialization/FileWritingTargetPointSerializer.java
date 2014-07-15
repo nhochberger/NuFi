@@ -12,15 +12,13 @@ import java.util.List;
 
 import model.targetdetection.TargetPoint;
 
-public class FileWritingTargetPointSerializer extends SessionBasedObject
-		implements TargetPointSerializer {
+public class FileWritingTargetPointSerializer extends SessionBasedObject implements TargetPointSerializer {
 
 	private String filepath;
 
 	public FileWritingTargetPointSerializer(BasicSession session) {
 		super(session);
-		this.filepath = String.valueOf(session
-				.getSessionVariable("destination"));
+		this.filepath = String.valueOf(session.getSessionVariable("destination"));
 	}
 
 	@Override
@@ -38,8 +36,7 @@ public class FileWritingTargetPointSerializer extends SessionBasedObject
 		logger().info("Serializing finished");
 	}
 
-	private void writeTargets(List<TargetPoint> targets, BufferedWriter writer)
-			throws IOException {
+	private void writeTargets(List<TargetPoint> targets, BufferedWriter writer) throws IOException {
 		TargetPointFormatter formatter = new TargetPointFormatter();
 		int i = 1;
 		for (TargetPoint targetPoint : targets) {

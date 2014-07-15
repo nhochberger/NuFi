@@ -5,8 +5,7 @@ import hochberger.utilities.application.session.SessionBasedObject;
 
 import java.util.List;
 
-public class ImagejTargetFinder extends SessionBasedObject implements
-		TargetFinder {
+public class ImagejTargetFinder extends SessionBasedObject implements TargetFinder {
 
 	public ImagejTargetFinder(BasicSession session) {
 		super(session);

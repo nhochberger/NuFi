@@ -7,8 +7,7 @@ import java.util.List;
 
 import model.targetdetection.TargetPoint;
 
-public class LoggingTargetPointSerializer extends SessionBasedObject implements
-		TargetPointSerializer {
+public class LoggingTargetPointSerializer extends SessionBasedObject implements TargetPointSerializer {
 
 	public LoggingTargetPointSerializer(BasicSession session) {
 		super(session);

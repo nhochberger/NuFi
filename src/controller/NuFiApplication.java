@@ -19,37 +19,36 @@ public class NuFiApplication extends BasicLoggedApplication {
 	private final TargetFinder targetFinder;
 	private final TargetPointSerializer serializer;
 
-	public static void main(String[] args) {
+	public static void main(final String[] args) {
 		setUpLoggingServices(NuFiApplication.class);
 		try {
-			ApplicationProperties properties = new ApplicationProperties();
-			NuFiApplication application = new NuFiApplication(properties, args);
+			final ApplicationProperties properties = new ApplicationProperties();
+			final NuFiApplication application = new NuFiApplication(properties, args);
 			application.start();
-		} catch (Exception e) {
-			getLogger().fatal(e);
+		} catch (final Exception e) {
+			getLogger().fatal(e.getCause(), e);
 		}
 	}
 
-	public NuFiApplication(ApplicationProperties properties, String[] args) {
+	public NuFiApplication(final ApplicationProperties properties, final String[] args) {
 		super();
-		this.session = new BasicSession(properties, new SimpleEventBus(),
-				getLogger());
-		ParameterExtractor.extractFrom(args).to(session);
-		this.targetFinder = new RandomTargetFinder(session);
-		this.serializer = new FileWritingTargetPointSerializer(session);
+		this.session = new BasicSession(properties, new SimpleEventBus(), getLogger());
+		ParameterExtractor.extractFrom(args).to(this.session);
+		this.targetFinder = new RandomTargetFinder(this.session);
+		this.serializer = new FileWritingTargetPointSerializer(this.session);
 	}
 
 	@Override
 	public void start() {
 		getLogger().info("Application started");
-		targetFinder.findTargets();
+		this.targetFinder.findTargets();
 		serializeTargets();
 	}
 
 	private void serializeTargets() {
 		try {
-			serializer.serialize(targetFinder.getTargets());
-		} catch (IOException e) {
+			this.serializer.serialize(this.targetFinder.getTargets());
+		} catch (final IOException e) {
 			getLogger().error("Unable to serialize targets", e);
 		}
 	}
