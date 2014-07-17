@@ -4,6 +4,7 @@ import hochberger.utilities.application.ApplicationProperties;
 import hochberger.utilities.application.BasicLoggedApplication;
 import hochberger.utilities.application.session.BasicSession;
 import hochberger.utilities.eventbus.SimpleEventBus;
+import hochberger.utilities.timing.Timing;
 
 import java.io.IOException;
 
@@ -41,7 +42,11 @@ public class NuFiApplication extends BasicLoggedApplication {
 	@Override
 	public void start() {
 		getLogger().info("Application started");
+		Timing timing = new Timing();
+		timing.start();
 		this.targetFinder.findTargets();
+		timing.stop();
+		getLogger().info("Target detetion took " + timing.getMilis() + " miliseconds.");
 		serializeTargets();
 	}
 
