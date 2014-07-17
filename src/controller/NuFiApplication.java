@@ -46,7 +46,7 @@ public class NuFiApplication extends BasicLoggedApplication {
 		timing.start();
 		this.targetFinder.findTargets();
 		timing.stop();
-		getLogger().info("Target detetion took " + timing.getMilis() + " miliseconds.");
+		getLogger().info("Target detection took " + timing.getMilis() + " miliseconds.");
 		serializeTargets();
 	}
 
