@@ -1,17 +1,16 @@
-package controller;
+package controller.configuration;
 
+import hochberger.utilities.files.FileChecker;
 import hochberger.utilities.properties.LoadProperties;
 import hochberger.utilities.text.Text;
 
+import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
 public class NuFiConfiguration {
-
-	private final static List<String> MANDATORY_ENTRIES = Arrays.asList("source.folder", "used.channels");
 
 	private final Properties properties;
 
@@ -27,8 +26,14 @@ public class NuFiConfiguration {
 	}
 
 	private static void validateProperties(final Properties properties) throws InvalidConfigurationException {
+		validateEntryExistence(properties);
+		validateSourceFolderExistence(properties);
+		validateChannelExistence(properties);
+	}
+
+	private static void validateEntryExistence(final Properties properties) throws InvalidConfigurationException {
 		List<String> missingEntries = new LinkedList<String>();
-		for (String key : MANDATORY_ENTRIES) {
+		for (String key : NuFiConfigurationConstants.MANDATORY_ENTRIES) {
 			if (Text.empty().equals(properties.getProperty(key, Text.empty()))) {
 				missingEntries.add(key);
 			}
@@ -36,6 +41,17 @@ public class NuFiConfiguration {
 		if (!missingEntries.isEmpty()) {
 			throw new InvalidConfigurationException(Text.fromIterable(missingEntries, ", "));
 		}
+	}
+
+	private static void validateSourceFolderExistence(final Properties properties) {
+		String filename = properties.getProperty(NuFiConfigurationConstants.SOURCE_FOLDER);
+		FileChecker fileChecker = new FileChecker(new File(filename));
+		// TODO
+	}
+
+	private static void validateChannelExistence(final Properties properties) {
+		// TODO Auto-generated method stub
+
 	}
 
 	public static class InvalidConfigurationException extends Exception {

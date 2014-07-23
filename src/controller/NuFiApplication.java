@@ -13,6 +13,7 @@ import hochberger.utilities.timing.Timing;
 
 import java.io.IOException;
 
+import controller.configuration.NuFiConfiguration;
 import model.serialization.FileWritingTargetPointSerializer;
 import model.serialization.TargetPointSerializer;
 import model.targetdetection.RandomTargetFinder;
