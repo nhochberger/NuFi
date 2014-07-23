@@ -7,6 +7,7 @@ import hochberger.utilities.application.parameter.checker.ParameterChecker;
 import hochberger.utilities.application.parameter.checker.SingleParameter;
 import hochberger.utilities.application.session.BasicSession;
 import hochberger.utilities.eventbus.SimpleEventBus;
+import hochberger.utilities.text.Text;
 import hochberger.utilities.timing.Timing;
 
 import java.io.IOException;
@@ -37,9 +38,11 @@ public class NuFiApplication extends BasicLoggedApplication {
 	private static void checkParams(final String[] args) throws ParameterException {
 		ParameterChecker paramChecker = new ParameterChecker(args);
 		paramChecker.addParameterAspect(new SingleParameter());
+		String resultDescription = Text.fromIterable(paramChecker.getResultDescription(), Text.newLine());
 		if (!paramChecker.check()) {
-			throw new ParameterException("Check application arguments. There needs to be exactly one argument for this application");
+			throw new ParameterException("Check application arguments:\n" + resultDescription);
 		}
+		getLogger().info(resultDescription);
 	}
 
 	public NuFiApplication(final ApplicationProperties properties, final String[] args) {
