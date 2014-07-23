@@ -4,7 +4,8 @@ import hochberger.utilities.application.ApplicationProperties;
 import hochberger.utilities.application.BasicLoggedApplication;
 import hochberger.utilities.application.parameter.ParameterException;
 import hochberger.utilities.application.parameter.checker.ParameterChecker;
-import hochberger.utilities.application.parameter.checker.SingleParameter;
+import hochberger.utilities.application.parameter.checker.aspects.ExistingFiles;
+import hochberger.utilities.application.parameter.checker.aspects.SingleParameter;
 import hochberger.utilities.application.session.BasicSession;
 import hochberger.utilities.eventbus.SimpleEventBus;
 import hochberger.utilities.text.Text;
@@ -39,6 +40,7 @@ public class NuFiApplication extends BasicLoggedApplication {
 	private static void checkParams(final String[] args) throws ParameterException {
 		ParameterChecker paramChecker = new ParameterChecker(args);
 		paramChecker.addParameterAspect(new SingleParameter());
+		paramChecker.addParameterAspect(new ExistingFiles());
 		boolean parameterResult = paramChecker.check();
 		String resultDescription = Text.fromIterable(paramChecker.getResultDescription(), Text.newLine());
 		if (!parameterResult) {
