@@ -29,6 +29,7 @@ public class NuFiApplication extends BasicLoggedApplication {
 		try {
 			getLogger().info("Preparing application start");
 			checkParams(args);
+			NuFiConfiguration configuration = NuFiConfiguration.createFrom(args[0]);
 			final ApplicationProperties properties = new ApplicationProperties();
 			final NuFiApplication application = new NuFiApplication(properties, args);
 			application.start();
