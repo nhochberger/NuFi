@@ -26,6 +26,7 @@ public class NuFiApplication extends BasicLoggedApplication {
 	public static void main(final String[] args) {
 		setUpLoggingServices(NuFiApplication.class);
 		try {
+			getLogger().info("Preparing application start");
 			checkParams(args);
 			final ApplicationProperties properties = new ApplicationProperties();
 			final NuFiApplication application = new NuFiApplication(properties, args);
@@ -38,8 +39,9 @@ public class NuFiApplication extends BasicLoggedApplication {
 	private static void checkParams(final String[] args) throws ParameterException {
 		ParameterChecker paramChecker = new ParameterChecker(args);
 		paramChecker.addParameterAspect(new SingleParameter());
+		boolean parameterResult = paramChecker.check();
 		String resultDescription = Text.fromIterable(paramChecker.getResultDescription(), Text.newLine());
-		if (!paramChecker.check()) {
+		if (!parameterResult) {
 			throw new ParameterException("Check application arguments:\n" + resultDescription);
 		}
 		getLogger().info(resultDescription);
