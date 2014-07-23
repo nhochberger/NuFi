@@ -2,13 +2,15 @@ package controller;
 
 import hochberger.utilities.application.ApplicationProperties;
 import hochberger.utilities.application.BasicLoggedApplication;
+import hochberger.utilities.application.parameter.ParameterException;
+import hochberger.utilities.application.parameter.checker.ParameterChecker;
+import hochberger.utilities.application.parameter.checker.SingleParameter;
 import hochberger.utilities.application.session.BasicSession;
 import hochberger.utilities.eventbus.SimpleEventBus;
 import hochberger.utilities.timing.Timing;
 
 import java.io.IOException;
 
-import model.ParameterExtractor;
 import model.serialization.FileWritingTargetPointSerializer;
 import model.serialization.TargetPointSerializer;
 import model.targetdetection.RandomTargetFinder;
@@ -23,6 +25,7 @@ public class NuFiApplication extends BasicLoggedApplication {
 	public static void main(final String[] args) {
 		setUpLoggingServices(NuFiApplication.class);
 		try {
+			checkParams(args);
 			final ApplicationProperties properties = new ApplicationProperties();
 			final NuFiApplication application = new NuFiApplication(properties, args);
 			application.start();
@@ -31,10 +34,17 @@ public class NuFiApplication extends BasicLoggedApplication {
 		}
 	}
 
+	private static void checkParams(final String[] args) throws ParameterException {
+		ParameterChecker paramChecker = new ParameterChecker(args);
+		paramChecker.addParameterAspect(new SingleParameter());
+		if (!paramChecker.check()) {
+			throw new ParameterException("Check application arguments. There needs to be exactly one argument for this application");
+		}
+	}
+
 	public NuFiApplication(final ApplicationProperties properties, final String[] args) {
 		super();
 		this.session = new BasicSession(properties, new SimpleEventBus(), getLogger());
-		ParameterExtractor.extractFrom(args).to(this.session);
 		this.targetFinder = new RandomTargetFinder(this.session);
 		this.serializer = new FileWritingTargetPointSerializer(this.session);
 	}
