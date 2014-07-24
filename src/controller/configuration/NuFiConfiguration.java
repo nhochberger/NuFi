@@ -1,6 +1,7 @@
 package controller.configuration;
 
-import hochberger.utilities.files.FileChecker;
+import hochberger.utilities.files.checker.FileChecker;
+import hochberger.utilities.files.checker.aspects.ExistingFolderFileAspect;
 import hochberger.utilities.properties.LoadProperties;
 import hochberger.utilities.text.Text;
 
@@ -46,6 +47,7 @@ public class NuFiConfiguration {
 	private static void validateSourceFolderExistence(final Properties properties) {
 		String filename = properties.getProperty(NuFiConfigurationConstants.SOURCE_FOLDER);
 		FileChecker fileChecker = new FileChecker(new File(filename));
+		fileChecker.addFileAspect(new ExistingFolderFileAspect());
 		// TODO
 	}
 
