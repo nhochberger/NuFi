@@ -11,6 +11,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
+import com.google.common.collect.Iterables;
+
 import controller.NuFiApplication;
 
 public class NuFiConfiguration {
@@ -48,8 +50,7 @@ public class NuFiConfiguration {
 	}
 
 	private static void validateSourceFolderExistence(final Properties properties) throws MissingSourceFolderException {
-		String filename = properties.getProperty(NuFiConfigurationConstants.SOURCE_FOLDER);
-		FileChecker fileChecker = new FileChecker(new File(filename));
+		FileChecker fileChecker = new FileChecker(sourceFolder(properties));
 		fileChecker.addFileAspect(new ExistingFolderFileAspect());
 		if (!fileChecker.check()) {
 			throw new MissingSourceFolderException(Text.fromIterable(fileChecker.getResultDescriptions(), ", "));
@@ -57,12 +58,27 @@ public class NuFiConfiguration {
 		NuFiApplication.getLogger().info("Source folder is okay.");
 	}
 
-	private static void validateChannelExistence(final Properties properties) {
-		// TODO Auto-generated method stub
+	private static File sourceFolder(final Properties properties) {
+		return new File(properties.getProperty(NuFiConfigurationConstants.SOURCE_FOLDER));
+	}
 
+	private static void validateChannelExistence(final Properties properties) throws MissingChannelFilesException {
+		String channelsProperty = properties.getProperty(NuFiConfigurationConstants.USED_CHANNELS);
+		String channelSeparator = properties.getProperty(NuFiConfigurationConstants.CHANNEL_SEPARATOR).trim();
+		Iterable<String> channels = Text.trimAll(Text.toIterable(channelsProperty, channelSeparator));
+		String filetype = properties.getProperty(NuFiConfigurationConstants.CHANNEL_FILETYPE);
+		ChannelFileBuilder builder = new ChannelFileBuilder(sourceFolder(properties), channels, filetype);
+		Iterable<File> channelFiles = builder.getChannelFiles();
+		if (Iterables.size(channelFiles) != Iterables.size(channels)) {
+			throw new MissingChannelFilesException("Number of expected channels does not match actual number.\nExpected channels: " + channelsProperty + "\nfound: "
+					+ Text.fromIterable(channelFiles, ", "));
+		}
+		NuFiApplication.getLogger().info("Channel files are okay.");
 	}
 
 	public static class ConfigurationException extends Exception {
+
+		private static final long serialVersionUID = -4487918431701008904L;
 
 		public ConfigurationException(final String message) {
 			super(message);
@@ -84,6 +100,15 @@ public class NuFiConfiguration {
 
 		public MissingSourceFolderException(final String description) {
 			super("Source folder error: " + description);
+		}
+	}
+
+	public static class MissingChannelFilesException extends ConfigurationException {
+
+		private static final long serialVersionUID = 5203928823071388289L;
+
+		public MissingChannelFilesException(final String description) {
+			super("Channel files error: " + description);
 		}
 	}
 }
