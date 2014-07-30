@@ -33,9 +33,9 @@ public class NuFiConfiguration {
 	}
 
 	public Iterable<File> getSourceFiles() {
-		List<File> sourceFiles = new LinkedList<>();
 		Text.toIterable(this.properties.getProperty(NuFiConfigurationConstants.SOURCE_FOLDER), getChannelSeparator());
-		return sourceFiles;
+		ChannelFileBuilder fileBuilder = new ChannelFileBuilder(this.properties);
+		return fileBuilder.getChannelFiles();
 	}
 
 	public String getCustomProperty(final String key) {
@@ -84,8 +84,7 @@ public class NuFiConfiguration {
 		String channelsProperty = properties.getProperty(NuFiConfigurationConstants.USED_CHANNELS);
 		String channelSeparator = NuFiConfigurationConstants.CHANNEL_SEPARATOR;
 		Iterable<String> channels = Text.trimAll(Text.toIterable(channelsProperty, channelSeparator));
-		String filetype = properties.getProperty(NuFiConfigurationConstants.CHANNEL_FILETYPE);
-		ChannelFileBuilder builder = new ChannelFileBuilder(sourceFolder(properties), channels, filetype);
+		ChannelFileBuilder builder = new ChannelFileBuilder(properties);
 		Iterable<File> channelFiles = builder.getChannelFiles();
 		if (Iterables.size(channelFiles) != Iterables.size(channels)) {
 			throw new MissingChannelFilesException("Number of expected channels does not match actual number.\nExpected channels: " + channelsProperty + "\nfound: "

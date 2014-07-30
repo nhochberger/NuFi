@@ -5,14 +5,17 @@ import hochberger.utilities.application.session.SessionBasedObject;
 
 import java.util.List;
 
+import controller.configuration.NuFiConfiguration;
+
 public class ImagejTargetFinder extends SessionBasedObject implements TargetFinder {
 
-	public ImagejTargetFinder(BasicSession session) {
+	public ImagejTargetFinder(final BasicSession session, final NuFiConfiguration configuration) {
 		super(session);
 	}
 
 	@Override
 	public void findTargets() {
+
 		// TODO Auto-generated method stub
 	}
 

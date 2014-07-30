@@ -13,10 +13,10 @@ import hochberger.utilities.timing.Timing;
 
 import java.io.IOException;
 
-import model.serialization.FileWritingTargetPointSerializer;
 import model.serialization.TargetPointSerializer;
-import model.targetdetection.RandomTargetFinder;
+import model.serialization.TargetPointSerializerFactory;
 import model.targetdetection.TargetFinder;
+import model.targetdetection.TargetFinderFactory;
 import controller.configuration.NuFiConfiguration;
 
 public class NuFiApplication extends BasicLoggedApplication {
@@ -54,8 +54,10 @@ public class NuFiApplication extends BasicLoggedApplication {
 	public NuFiApplication(final ApplicationProperties properties, final NuFiConfiguration configuration) {
 		super();
 		this.session = new BasicSession(properties, new SimpleEventBus(), getLogger());
-		this.targetFinder = new RandomTargetFinder(this.session, configuration);
-		this.serializer = new FileWritingTargetPointSerializer(this.session, configuration);
+		TargetFinderFactory targetFinderFactory = new TargetFinderFactory(this.session, configuration);
+		this.targetFinder = targetFinderFactory.getTargetFinder();
+		TargetPointSerializerFactory targetPointSerializerFactory = new TargetPointSerializerFactory(this.session, configuration);
+		this.serializer = targetPointSerializerFactory.getTargetFinder();
 	}
 
 	@Override
