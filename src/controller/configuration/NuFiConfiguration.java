@@ -24,6 +24,24 @@ public class NuFiConfiguration {
 		this.properties = properties;
 	}
 
+	public File getSourceFolder() {
+		return new File(this.properties.getProperty(NuFiConfigurationConstants.SOURCE_FOLDER));
+	}
+
+	public String getChannelSeparator() {
+		return this.properties.getProperty(NuFiConfigurationConstants.CHANNEL_SEPARATOR);
+	}
+
+	public Iterable<File> getSourceFiles() {
+		List<File> sourceFiles = new LinkedList<>();
+		Text.toIterable(this.properties.getProperty(NuFiConfigurationConstants.SOURCE_FOLDER), getChannelSeparator());
+		return sourceFiles;
+	}
+
+	public String getCustomProperty(final String key) {
+		return this.properties.getProperty(key, Text.empty());
+	}
+
 	public static NuFiConfiguration createFrom(final String filePath) throws IOException, ConfigurationException {
 		Properties properties = LoadProperties.fromExtern(filePath);
 		validateProperties(properties);
@@ -64,7 +82,7 @@ public class NuFiConfiguration {
 
 	private static void validateChannelExistence(final Properties properties) throws MissingChannelFilesException {
 		String channelsProperty = properties.getProperty(NuFiConfigurationConstants.USED_CHANNELS);
-		String channelSeparator = properties.getProperty(NuFiConfigurationConstants.CHANNEL_SEPARATOR).trim();
+		String channelSeparator = NuFiConfigurationConstants.CHANNEL_SEPARATOR;
 		Iterable<String> channels = Text.trimAll(Text.toIterable(channelsProperty, channelSeparator));
 		String filetype = properties.getProperty(NuFiConfigurationConstants.CHANNEL_FILETYPE);
 		ChannelFileBuilder builder = new ChannelFileBuilder(sourceFolder(properties), channels, filetype);
@@ -74,6 +92,7 @@ public class NuFiConfiguration {
 					+ Text.fromIterable(channelFiles, ", "));
 		}
 		NuFiApplication.getLogger().info("Channel files are okay.");
+		NuFiApplication.getLogger().info("Using: " + Text.fromIterable(channelFiles, ", "));
 	}
 
 	public static class ConfigurationException extends Exception {
