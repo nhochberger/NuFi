@@ -33,7 +33,6 @@ public class NuFiConfiguration {
 	}
 
 	public Iterable<File> getSourceFiles() {
-		Text.toIterable(this.properties.getProperty(NuFiConfigurationConstants.SOURCE_FOLDER), getChannelSeparator());
 		ChannelFileBuilder fileBuilder = new ChannelFileBuilder(this.properties);
 		return fileBuilder.getChannelFiles();
 	}
