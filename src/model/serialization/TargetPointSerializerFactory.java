@@ -11,13 +11,13 @@ public class TargetPointSerializerFactory {
 		SERIAL {
 			@Override
 			public TargetPointSerializer getSerializer(final BasicSession session, final NuFiConfiguration configuration) {
-				return new LoggingTargetPointSerializer(session);
+				return new FileWritingTargetPointSerializer(session, configuration);
 			}
 		},
 		LOGGED {
 			@Override
 			public TargetPointSerializer getSerializer(final BasicSession session, final NuFiConfiguration configuration) {
-				return new FileWritingTargetPointSerializer(session, configuration);
+				return new LoggingTargetPointSerializer(session);
 			}
 		};
 

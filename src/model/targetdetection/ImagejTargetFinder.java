@@ -2,7 +2,13 @@ package model.targetdetection;
 
 import hochberger.utilities.application.session.BasicSession;
 import hochberger.utilities.application.session.SessionBasedObject;
+import ij.IJ;
+import ij.ImagePlus;
+import ij.plugin.filter.MaximumFinder;
+import ij.process.ImageProcessor;
 
+import java.awt.Polygon;
+import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -21,6 +27,16 @@ public class ImagejTargetFinder extends SessionBasedObject implements TargetFind
 
 	@Override
 	public void findTargets() {
+		for (File image : this.configuration.getSourceFiles()) {
+			ImagePlus imagePlus = IJ.openImage(image.getAbsolutePath());
+			MaximumFinder maxFinder = new MaximumFinder();
+			ImageProcessor processor = imagePlus.getProcessor();
+			Polygon polygon = maxFinder.getMaxima(processor, 100, true);
+			for (int i = 0; i < polygon.xpoints.length; i++) {
+				this.targets.add(new TargetPoint(polygon.xpoints[i], polygon.ypoints[i]));
+			}
+			break;
+		}
 	}
 
 	@Override
