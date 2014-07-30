@@ -11,22 +11,23 @@ import java.io.IOException;
 import java.util.List;
 
 import model.targetdetection.TargetPoint;
+import controller.configuration.NuFiConfiguration;
 
 public class FileWritingTargetPointSerializer extends SessionBasedObject implements TargetPointSerializer {
 
-	private String filepath;
+	private final NuFiConfiguration configuration;
 
-	public FileWritingTargetPointSerializer(BasicSession session) {
+	public FileWritingTargetPointSerializer(final BasicSession session, final NuFiConfiguration configuration) {
 		super(session);
-		this.filepath = String.valueOf(session.getSessionVariable("destination"));
+		this.configuration = configuration;
 	}
 
 	@Override
-	public void serialize(List<TargetPoint> targets) throws IOException {
+	public void serialize(final List<TargetPoint> targets) throws IOException {
 		logger().info("Beginning to serialize " + targets.size() + " targets");
 		BufferedWriter writer = null;
 		try {
-			File destination = new File(filepath);
+			File destination = getDestinationFile();
 			logger().info("Destination: " + destination.getAbsolutePath());
 			writer = new BufferedWriter(new FileWriter(destination));
 			writeTargets(targets, writer);
@@ -36,7 +37,7 @@ public class FileWritingTargetPointSerializer extends SessionBasedObject impleme
 		logger().info("Serializing finished");
 	}
 
-	private void writeTargets(List<TargetPoint> targets, BufferedWriter writer) throws IOException {
+	private void writeTargets(final List<TargetPoint> targets, final BufferedWriter writer) throws IOException {
 		TargetPointFormatter formatter = new TargetPointFormatter();
 		int i = 1;
 		for (TargetPoint targetPoint : targets) {
@@ -45,5 +46,18 @@ public class FileWritingTargetPointSerializer extends SessionBasedObject impleme
 			writer.newLine();
 			i++;
 		}
+	}
+
+	private File getDestinationFolder() {
+		String destinationFolderPath = this.configuration.getSourceFolder().getAbsolutePath() + "/results";
+		File destinationFile = new File(destinationFolderPath);
+		destinationFile.mkdirs();
+		return destinationFile;
+	}
+
+	private File getDestinationFile() {
+		String destinationFileName = getDestinationFolder().getAbsolutePath() + "/targets.txt";
+		File destination = new File(destinationFileName);
+		return destination;
 	}
 }

@@ -7,13 +7,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import controller.configuration.NuFiConfiguration;
+
 public class RandomTargetFinder extends SessionBasedObject implements TargetFinder {
 
 	private final List<TargetPoint> targets;
+	private final NuFiConfiguration configuration;
 
-	public RandomTargetFinder(BasicSession session) {
+	public RandomTargetFinder(final BasicSession session, final NuFiConfiguration configuration) {
 		super(session);
-		targets = new ArrayList<TargetPoint>();
+		this.configuration = configuration;
+		this.targets = new ArrayList<TargetPoint>();
 	}
 
 	@Override
@@ -22,18 +26,18 @@ public class RandomTargetFinder extends SessionBasedObject implements TargetFind
 		generateRandomTargets(10);
 	}
 
-	private void generateRandomTargets(int amount) {
+	private void generateRandomTargets(final int amount) {
 		Random targetGenerator = new Random();
 		for (int i = 1; i <= amount; i++) {
 			TargetPoint newTarget = new TargetPoint(targetGenerator.nextInt(1000), targetGenerator.nextInt(1000));
 			logger().info("Found target: " + newTarget);
-			targets.add(newTarget);
+			this.targets.add(newTarget);
 		}
-		logger().info("Found " + targets.size() + " targets");
+		logger().info("Found " + this.targets.size() + " targets");
 	}
 
 	@Override
 	public List<TargetPoint> getTargets() {
-		return targets;
+		return this.targets;
 	}
 }
