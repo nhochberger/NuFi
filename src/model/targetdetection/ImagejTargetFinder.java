@@ -21,11 +21,13 @@ public class ImagejTargetFinder extends SessionBasedObject implements TargetFind
 
 	private final NuFiConfiguration configuration;
 	private final List<TargetPoint> targets;
+	private final ResultDisplayFactory displayFactory;
 
 	public ImagejTargetFinder(final BasicSession session, final NuFiConfiguration configuration) {
 		super(session);
 		this.configuration = configuration;
 		this.targets = new LinkedList<>();
+		this.displayFactory = new ResultDisplayFactory(session);
 	}
 
 	@Override
@@ -40,11 +42,14 @@ public class ImagejTargetFinder extends SessionBasedObject implements TargetFind
 
 		MaximumFinder maxFinder = new MaximumFinder();
 		ImageProcessor processor = channel1.getProcessor();
+		logger().info("MaximumFinder starts");
 		Polygon polygon = maxFinder.getMaxima(processor, 20, true);
+		logger().info("MaximumFinder finished");
 		for (int i = 0; i < polygon.xpoints.length; i++) {
 			this.targets.add(new TargetPoint(polygon.xpoints[i], polygon.ypoints[i]));
 		}
-		channel1.show("channel1");
+		logger().info("Found " + this.targets.size() + " targets.");
+		this.displayFactory.getResultDisplayer().displayResult(channel1, polygon);
 	}
 
 	@Override
