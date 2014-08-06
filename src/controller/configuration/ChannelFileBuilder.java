@@ -1,6 +1,8 @@
 package controller.configuration;
 
-import hochberger.utilities.files.FirstFilenameEndsWithFilter;
+import hochberger.utilities.files.filenamefilter.AndFilenameFilter;
+import hochberger.utilities.files.filenamefilter.FileNameContainsFilter;
+import hochberger.utilities.files.filenamefilter.FilenameEndsWithFilter;
 import hochberger.utilities.text.Text;
 
 import java.io.File;
@@ -34,8 +36,11 @@ public class ChannelFileBuilder {
 
 	private Iterable<FilenameFilter> buildFilenameFilters() {
 		LinkedList<FilenameFilter> filters = new LinkedList<>();
-		for (String suffix : this.channelEndings) {
-			filters.add(new FirstFilenameEndsWithFilter(suffix + "." + this.filetype));
+		FilenameFilter pngFilter = new FilenameEndsWithFilter(this.filetype);
+		for (String infix : this.channelEndings) {
+			FilenameFilter containsFilter = new FileNameContainsFilter(infix);
+			FilenameFilter andFilter = new AndFilenameFilter(pngFilter, containsFilter);
+			filters.add(andFilter);
 		}
 		return filters;
 	}
