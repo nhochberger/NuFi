@@ -10,6 +10,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 
+import model.NuFiTimestampExtractor;
 import model.targetdetection.TargetPoint;
 import controller.configuration.NuFiConfiguration;
 
@@ -56,7 +57,8 @@ public class FileWritingTargetPointSerializer extends SessionBasedObject impleme
 	}
 
 	private File getDestinationFile() {
-		String destinationFileName = getDestinationFolder().getAbsolutePath() + "/targets.txt";
+		NuFiTimestampExtractor extractor = new NuFiTimestampExtractor(this.configuration);
+		String destinationFileName = getDestinationFolder().getAbsolutePath() + "/" + extractor.getTimestamp() + "_targets.txt";
 		File destination = new File(destinationFileName);
 		return destination;
 	}

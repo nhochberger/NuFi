@@ -11,6 +11,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
+import model.NuFiImage;
+
 import com.google.common.collect.Iterables;
 
 import controller.NuFiApplication;
@@ -32,9 +34,19 @@ public class NuFiConfiguration {
 		return this.properties.getProperty(NuFiConfigurationConstants.CHANNEL_SEPARATOR);
 	}
 
-	public Iterable<File> getSourceFiles() {
+	public Iterable<String> getChannelDesignators() {
+		String channelsProperty = this.properties.getProperty(NuFiConfigurationConstants.USED_CHANNELS);
+		String channelSeparator = NuFiConfigurationConstants.CHANNEL_SEPARATOR;
+		return Text.trimAll(Text.toIterable(channelsProperty, channelSeparator));
+	}
+
+	public String getImageFiletype() {
+		return this.properties.getProperty(NuFiConfigurationConstants.CHANNEL_FILETYPE);
+	}
+
+	public NuFiImage getNuFiImage() {
 		ChannelFileBuilder fileBuilder = new ChannelFileBuilder(this.properties);
-		return fileBuilder.getChannelFiles();
+		return fileBuilder.getNuFiImage();
 	}
 
 	public String getCustomProperty(final String key) {

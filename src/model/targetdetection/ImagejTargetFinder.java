@@ -9,12 +9,10 @@ import ij.plugin.filter.MaximumFinder;
 import ij.process.ImageProcessor;
 
 import java.awt.Polygon;
-import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.google.common.collect.Iterables;
-
+import model.NuFiImage;
 import controller.configuration.NuFiConfiguration;
 
 public class ImagejTargetFinder extends SessionBasedObject implements TargetFinder {
@@ -32,8 +30,9 @@ public class ImagejTargetFinder extends SessionBasedObject implements TargetFind
 
 	@Override
 	public void findTargets() {
-		Iterable<File> sourceFiles = this.configuration.getSourceFiles();
-		ImagePlus channel1 = IJ.openImage(Iterables.get(sourceFiles, 0).getAbsolutePath());
+		NuFiImage nuFiImage = this.configuration.getNuFiImage();
+		ImagePlus channel1 = IJ.openImage(nuFiImage.getChannel1().getAbsolutePath());
+		// System.err.println(nuFiImage.getTimestamp());
 		channel1.getProcessor().smooth();
 		channel1.getProcessor().smooth();
 		ContrastEnhancer enhancer = new ContrastEnhancer();
