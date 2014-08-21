@@ -10,8 +10,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 
-import model.NuFiTimestampExtractor;
 import model.targetdetection.TargetPoint;
+
+import com.google.common.collect.Iterables;
+
 import controller.configuration.NuFiConfiguration;
 
 public class FileWritingTargetPointSerializer extends SessionBasedObject implements TargetPointSerializer {
@@ -57,8 +59,13 @@ public class FileWritingTargetPointSerializer extends SessionBasedObject impleme
 	}
 
 	private File getDestinationFile() {
-		NuFiTimestampExtractor extractor = new NuFiTimestampExtractor(this.configuration);
-		String destinationFileName = getDestinationFolder().getAbsolutePath() + "/" + extractor.getTimestamp() + "_targets.txt";
+		String channel1Filename = this.configuration.getNuFiImage().getChannel1().getName();
+		String channel1Designator = Iterables.get(this.configuration.getChannelDesignators(), 0);
+		String filetype = this.configuration.getImageFiletype();
+		String result = channel1Filename.replace(channel1Designator, "targets").replace(filetype, "txt");
+
+		String resultFilename = channel1Filename.replace(channel1Designator, "targets").replace(filetype, "txt");
+		String destinationFileName = getDestinationFolder().getAbsolutePath() + "/" + resultFilename;
 		File destination = new File(destinationFileName);
 		return destination;
 	}
