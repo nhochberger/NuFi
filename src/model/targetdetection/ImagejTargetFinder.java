@@ -7,10 +7,12 @@ import ij.ImagePlus;
 import ij.measure.Measurements;
 import ij.measure.ResultsTable;
 import ij.plugin.ContrastEnhancer;
+import ij.plugin.filter.MaximumFinder;
 import ij.plugin.filter.ParticleAnalyzer;
 import ij.plugin.frame.RoiManager;
 import ij.process.AutoThresholder.Method;
 
+import java.awt.Polygon;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -39,18 +41,25 @@ public class ImagejTargetFinder extends SessionBasedObject implements TargetFind
 		ContrastEnhancer contrastEnhancer = new ContrastEnhancer();
 		contrastEnhancer.stretchHistogram(channel3.getProcessor(), 0.3);
 		channel3.getProcessor().setAutoThreshold(Method.Default, true);
-		channel3.getProcessor().autoThreshold();
 		int options = ParticleAnalyzer.ADD_TO_MANAGER | ParticleAnalyzer.IN_SITU_SHOW | ParticleAnalyzer.SHOW_OUTLINES | ParticleAnalyzer.EXCLUDE_EDGE_PARTICLES;
 		int measurements = Measurements.AREA | Measurements.CIRCULARITY;
 		ResultsTable table = new ResultsTable();
 		ParticleAnalyzer.setResultsTable(table);
 		RoiManager manager = new RoiManager(true);
 		ParticleAnalyzer.setRoiManager(manager);
-		ParticleAnalyzer analyzer = new ParticleAnalyzer(options, measurements, table, 4000d, 50000d);
-		System.err.println("result of analysis; " + analyzer.analyze(channel3));
-		System.err.println("#rois: " + manager.getRoisAsArray().length);
-		channel3.updateAndDraw();
-		channel3.show();
+		ParticleAnalyzer analyzer = new ParticleAnalyzer(options, measurements, table, 6400d, 15000d);
+		boolean analysisResult = analyzer.analyze(channel3);
+		logger().info("Particle analysis result: " + analysisResult);
+		logger().info("Particle analysis found " + manager.getCount() + " ROIs.");
+		MaximumFinder finder = new MaximumFinder();
+		for (int i = 0; i < manager.getCount(); i++) {
+			manager.select(channel1, i);
+			Polygon maxima = finder.getMaxima(channel1.getProcessor(), 25, true);
+			for (int j = 0; j < maxima.npoints; j++) {
+				this.targets.add(new TargetPoint(maxima.xpoints[j], maxima.ypoints[j]));
+			}
+		}
+		this.displayFactory.getResultDisplayer().displayResult(channel1, manager.getRoisAsArray(), this.targets);
 	}
 
 	@Override
