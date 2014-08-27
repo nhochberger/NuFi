@@ -4,11 +4,13 @@ import hochberger.utilities.application.session.BasicSession;
 import hochberger.utilities.application.session.SessionBasedObject;
 import ij.IJ;
 import ij.ImagePlus;
+import ij.measure.Measurements;
+import ij.measure.ResultsTable;
 import ij.plugin.ContrastEnhancer;
-import ij.plugin.filter.MaximumFinder;
-import ij.process.ImageProcessor;
+import ij.plugin.filter.ParticleAnalyzer;
+import ij.plugin.frame.RoiManager;
+import ij.process.AutoThresholder.Method;
 
-import java.awt.Polygon;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -33,23 +35,22 @@ public class ImagejTargetFinder extends SessionBasedObject implements TargetFind
 	public void findTargets() {
 		NuFiImage nuFiImage = this.configuration.getNuFiImage();
 		ImagePlus channel1 = IJ.openImage(nuFiImage.getChannel1().getAbsolutePath());
-		// System.err.println(nuFiImage.getTimestamp());
-		channel1.getProcessor().smooth();
-		channel1.getProcessor().smooth();
-		ContrastEnhancer enhancer = new ContrastEnhancer();
-		enhancer.setNormalize(true);
-		enhancer.stretchHistogram(channel1, 3);
-
-		MaximumFinder maxFinder = new MaximumFinder();
-		ImageProcessor processor = channel1.getProcessor();
-		logger().info("MaximumFinder starts");
-		Polygon polygon = maxFinder.getMaxima(processor, 20, true);
-		logger().info("MaximumFinder finished");
-		for (int i = 0; i < polygon.xpoints.length; i++) {
-			this.targets.add(new TargetPoint(polygon.xpoints[i], polygon.ypoints[i]));
-		}
-		logger().info("Found " + this.targets.size() + " targets.");
-		this.displayFactory.getResultDisplayer().displayResult(channel1, polygon);
+		ImagePlus channel3 = IJ.openImage(nuFiImage.getChannel3().getAbsolutePath());
+		ContrastEnhancer contrastEnhancer = new ContrastEnhancer();
+		contrastEnhancer.stretchHistogram(channel3.getProcessor(), 0.3);
+		channel3.getProcessor().setAutoThreshold(Method.Default, true);
+		channel3.getProcessor().autoThreshold();
+		int options = ParticleAnalyzer.ADD_TO_MANAGER | ParticleAnalyzer.IN_SITU_SHOW | ParticleAnalyzer.SHOW_OUTLINES | ParticleAnalyzer.EXCLUDE_EDGE_PARTICLES;
+		int measurements = Measurements.AREA | Measurements.CIRCULARITY;
+		ResultsTable table = new ResultsTable();
+		ParticleAnalyzer.setResultsTable(table);
+		RoiManager manager = new RoiManager(true);
+		ParticleAnalyzer.setRoiManager(manager);
+		ParticleAnalyzer analyzer = new ParticleAnalyzer(options, measurements, table, 4000d, 50000d);
+		System.err.println("result of analysis; " + analyzer.analyze(channel3));
+		System.err.println("#rois: " + manager.getRoisAsArray().length);
+		channel3.updateAndDraw();
+		channel3.show();
 	}
 
 	@Override
