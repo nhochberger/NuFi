@@ -1,4 +1,4 @@
-package model.targetdetection;
+package model.display;
 
 import hochberger.utilities.application.session.BasicSession;
 import hochberger.utilities.application.session.SessionBasedObject;

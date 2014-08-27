@@ -13,6 +13,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import model.NuFiImage;
+import model.display.ResultDisplayFactory;
 import controller.configuration.NuFiConfiguration;
 
 public class ImagejTargetFinder extends SessionBasedObject implements TargetFinder {
