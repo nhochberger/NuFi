@@ -6,13 +6,11 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.measure.Measurements;
 import ij.measure.ResultsTable;
-import ij.plugin.ContrastEnhancer;
-import ij.plugin.filter.MaximumFinder;
 import ij.plugin.filter.ParticleAnalyzer;
 import ij.plugin.frame.RoiManager;
 import ij.process.AutoThresholder.Method;
 
-import java.awt.Polygon;
+import java.awt.Rectangle;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -38,11 +36,9 @@ public class ImagejTargetFinder extends SessionBasedObject implements TargetFind
 		NuFiImage nuFiImage = this.configuration.getNuFiImage();
 		ImagePlus channel1 = IJ.openImage(nuFiImage.getChannel1().getAbsolutePath());
 		ImagePlus channel3 = IJ.openImage(nuFiImage.getChannel3().getAbsolutePath());
-		ContrastEnhancer contrastEnhancer = new ContrastEnhancer();
-		contrastEnhancer.stretchHistogram(channel3, 0.3);
 		channel3.getProcessor().setAutoThreshold(Method.Default, true);
 		int options = ParticleAnalyzer.ADD_TO_MANAGER | ParticleAnalyzer.IN_SITU_SHOW | ParticleAnalyzer.SHOW_OUTLINES | ParticleAnalyzer.EXCLUDE_EDGE_PARTICLES;
-		int measurements = Measurements.AREA | Measurements.CIRCULARITY;
+		int measurements = 0;
 		ResultsTable table = new ResultsTable();
 		ParticleAnalyzer.setResultsTable(table);
 		RoiManager manager = new RoiManager(true);
@@ -51,14 +47,27 @@ public class ImagejTargetFinder extends SessionBasedObject implements TargetFind
 		boolean analysisResult = analyzer.analyze(channel3);
 		logger().info("Particle analysis result: " + analysisResult);
 		logger().info("Particle analysis found " + manager.getCount() + " ROIs.");
-		MaximumFinder finder = new MaximumFinder();
-		contrastEnhancer.stretchHistogram(channel1, 0.3);
-		channel1.updateAndDraw();
+		// until here: determining ROIs
+
+		// now: find nucleoli
 		for (int i = 0; i < manager.getCount(); i++) {
 			manager.select(channel1, i);
-			Polygon maxima = finder.getMaxima(channel1.getProcessor(), 60, true);
-			for (int j = 0; j < maxima.npoints; j++) {
-				this.targets.add(new TargetPoint(maxima.xpoints[j], maxima.ypoints[j]));
+			Rectangle roiBounds = manager.getRoi(i).getBounds();
+			int xOffset = (int) roiBounds.getX();
+			int yOffset = (int) roiBounds.getY();
+			ImagePlus workingImage = channel1.duplicate();
+			workingImage.updateAndDraw();
+			workingImage.getProcessor().setAutoThreshold(Method.MaxEntropy, true);
+			int roiOptions = ParticleAnalyzer.EXCLUDE_EDGE_PARTICLES;
+			int roiMeasurements = Measurements.CENTER_OF_MASS;
+			ResultsTable roiResults = new ResultsTable();
+			ParticleAnalyzer.setResultsTable(roiResults);
+			ParticleAnalyzer roiAnalyzer = new ParticleAnalyzer(roiOptions, roiMeasurements, roiResults, 50, 500);
+			System.err.println("analysis of roi #" + i + ": " + roiAnalyzer.analyze(workingImage));
+			for (int j = 0; j < roiResults.getCounter(); j++) {
+				int x = (int) (roiResults.getValue("XM", j) + xOffset);
+				int y = (int) (roiResults.getValue("YM", j) + yOffset);
+				this.targets.add(new TargetPoint(x, y));
 			}
 		}
 		this.displayFactory.getResultDisplayer().displayResult(channel1, manager.getRoisAsArray(), this.targets);
