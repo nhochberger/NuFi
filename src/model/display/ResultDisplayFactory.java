@@ -101,7 +101,7 @@ public class ResultDisplayFactory extends SessionBasedObject {
 
 				private void drawNumber(final Graphics2D graphics, final int number, final int x, final int y) {
 					graphics.setColor(Color.RED);
-					graphics.setFont(graphics.getFont().deriveFont(8f));
+					graphics.setFont(graphics.getFont().deriveFont(10f));
 					graphics.drawString(String.valueOf(number), x + 2, y - 2);
 				}
 
