@@ -88,13 +88,21 @@ public class ResultDisplayFactory extends SessionBasedObject {
 								graphics.setColor(Color.YELLOW);
 								graphics.drawPolygon(roi.getConvexHull());
 							}
+							int number = 0;
 							for (TargetPoint target : targets) {
 								drawCross(graphics, (target.getxCoordinate()), (target.getyCoordinate()));
+								drawNumber(graphics, ++number, (target.getxCoordinate()), (target.getyCoordinate()));
 							}
 						}
 					};
 					JScrollPane scrollPane = new JScrollPane(panel, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
 					setContentPane(scrollPane);
+				}
+
+				private void drawNumber(final Graphics2D graphics, final int number, final int x, final int y) {
+					graphics.setColor(Color.RED);
+					graphics.setFont(graphics.getFont().deriveFont(8f));
+					graphics.drawString(String.valueOf(number), x + 2, y - 2);
 				}
 
 				private void drawCross(final Graphics2D graphics, final int x, final int y) {
