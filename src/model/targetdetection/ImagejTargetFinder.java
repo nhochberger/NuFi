@@ -39,7 +39,7 @@ public class ImagejTargetFinder extends SessionBasedObject implements TargetFind
 		ImagePlus channel1 = IJ.openImage(nuFiImage.getChannel1().getAbsolutePath());
 		ImagePlus channel3 = IJ.openImage(nuFiImage.getChannel3().getAbsolutePath());
 		ContrastEnhancer contrastEnhancer = new ContrastEnhancer();
-		contrastEnhancer.stretchHistogram(channel3.getProcessor(), 0.3);
+		contrastEnhancer.stretchHistogram(channel3, 0.3);
 		channel3.getProcessor().setAutoThreshold(Method.Default, true);
 		int options = ParticleAnalyzer.ADD_TO_MANAGER | ParticleAnalyzer.IN_SITU_SHOW | ParticleAnalyzer.SHOW_OUTLINES | ParticleAnalyzer.EXCLUDE_EDGE_PARTICLES;
 		int measurements = Measurements.AREA | Measurements.CIRCULARITY;
@@ -47,14 +47,16 @@ public class ImagejTargetFinder extends SessionBasedObject implements TargetFind
 		ParticleAnalyzer.setResultsTable(table);
 		RoiManager manager = new RoiManager(true);
 		ParticleAnalyzer.setRoiManager(manager);
-		ParticleAnalyzer analyzer = new ParticleAnalyzer(options, measurements, table, 6400d, 15000d);
+		ParticleAnalyzer analyzer = new ParticleAnalyzer(options, measurements, table, 5000d, 25000d);
 		boolean analysisResult = analyzer.analyze(channel3);
 		logger().info("Particle analysis result: " + analysisResult);
 		logger().info("Particle analysis found " + manager.getCount() + " ROIs.");
 		MaximumFinder finder = new MaximumFinder();
+		contrastEnhancer.stretchHistogram(channel1, 0.3);
+		channel1.updateAndDraw();
 		for (int i = 0; i < manager.getCount(); i++) {
 			manager.select(channel1, i);
-			Polygon maxima = finder.getMaxima(channel1.getProcessor(), 25, true);
+			Polygon maxima = finder.getMaxima(channel1.getProcessor(), 60, true);
 			for (int j = 0; j < maxima.npoints; j++) {
 				this.targets.add(new TargetPoint(maxima.xpoints[j], maxima.ypoints[j]));
 			}
