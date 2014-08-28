@@ -11,6 +11,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.util.List;
 
 import javax.swing.JPanel;
@@ -101,7 +102,8 @@ public class ResultDisplayFactory extends SessionBasedObject {
 
 				private void drawNumber(final Graphics2D graphics, final int number, final int x, final int y) {
 					graphics.setColor(Color.RED);
-					graphics.setFont(graphics.getFont().deriveFont(10f));
+					graphics.setFont(graphics.getFont().deriveFont(8f));
+					graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_VRGB);
 					graphics.drawString(String.valueOf(number), x + 2, y - 2);
 				}
 
