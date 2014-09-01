@@ -45,7 +45,7 @@ public class ImagejTargetFinder extends SessionBasedObject implements TargetFind
 
 	private RoiManager findRoisIn(final NuFiImage image) {
 		ImagePlus channel3 = IJ.openImage(image.getChannel3().getAbsolutePath());
-		channel3.getProcessor().setAutoThreshold(Method.Default, true);
+		channel3.getProcessor().setAutoThreshold(Method.IsoData, true);
 		RoiManager manager = new RoiManager(true);
 		ResultsTable table = new ResultsTable();
 		int options = ParticleAnalyzer.ADD_TO_MANAGER | ParticleAnalyzer.IN_SITU_SHOW | ParticleAnalyzer.SHOW_OUTLINES | ParticleAnalyzer.EXCLUDE_EDGE_PARTICLES;
@@ -88,13 +88,14 @@ public class ImagejTargetFinder extends SessionBasedObject implements TargetFind
 
 	private void analyze(final ImagePlus workingImage, final int lowestThreshold, final int highestThreshold, final SortedSet<ResultsTable> results) {
 		for (int threshold = highestThreshold; lowestThreshold <= threshold; threshold -= 5) {
+			ImagePlus duplicate = workingImage.duplicate();
 			ResultsTable roiResults = new ResultsTable();
 			int roiOptions = ParticleAnalyzer.EXCLUDE_EDGE_PARTICLES;
 			int roiMeasurements = Measurements.CENTER_OF_MASS;
 			ParticleAnalyzer.setResultsTable(roiResults);
 			ParticleAnalyzer roiAnalyzer = new ParticleAnalyzer(roiOptions, roiMeasurements, roiResults, 100, 500);
-			workingImage.getProcessor().setThreshold(threshold, 255f, ImageProcessor.RED_LUT);
-			boolean roiAnalysisResult = roiAnalyzer.analyze(workingImage);
+			duplicate.getProcessor().setThreshold(threshold, 255f, ImageProcessor.RED_LUT);
+			boolean roiAnalysisResult = roiAnalyzer.analyze(duplicate);
 			logger().info("Result of analysis: " + roiAnalysisResult);
 			logger().info("Analysis with threshold " + threshold + " resulted in " + roiResults.getCounter() + " possible targets.");
 			results.add(roiResults);
