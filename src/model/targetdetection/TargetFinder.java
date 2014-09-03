@@ -7,4 +7,6 @@ public interface TargetFinder {
 	public void findTargets();
 
 	public List<TargetPoint> getTargets();
+
+	public DetailedResults getDetailedResults();
 }

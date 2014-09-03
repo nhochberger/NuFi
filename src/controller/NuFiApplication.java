@@ -17,6 +17,8 @@ import model.serialization.TargetPointSerializer;
 import model.serialization.TargetPointSerializerFactory;
 import model.targetdetection.TargetFinder;
 import model.targetdetection.TargetFinderFactory;
+import view.ResultDisplayFactory;
+import view.ResultDisplayer;
 import controller.configuration.NuFiConfiguration;
 
 public class NuFiApplication extends BasicLoggedApplication {
@@ -24,13 +26,15 @@ public class NuFiApplication extends BasicLoggedApplication {
 	private final BasicSession session;
 	private final TargetFinder targetFinder;
 	private final TargetPointSerializer serializer;
+	private final ResultDisplayer displayer;
+	private final NuFiConfiguration configuration;
 
 	public static void main(final String[] args) {
 		setUpLoggingServices(NuFiApplication.class);
 		try {
 			getLogger().info("Preparing application start");
 			checkParams(args);
-			NuFiConfiguration configuration = NuFiConfiguration.createFrom(args[0]);
+			final NuFiConfiguration configuration = NuFiConfiguration.createFrom(args[0]);
 			final ApplicationProperties properties = new ApplicationProperties();
 			final NuFiApplication application = new NuFiApplication(properties, configuration);
 			application.start();
@@ -40,11 +44,11 @@ public class NuFiApplication extends BasicLoggedApplication {
 	}
 
 	private static void checkParams(final String[] args) throws ParameterException {
-		ParameterChecker paramChecker = new ParameterChecker(args);
+		final ParameterChecker paramChecker = new ParameterChecker(args);
 		paramChecker.addParameterAspect(new SingleParameter());
 		paramChecker.addParameterAspect(new ExistingFiles());
-		boolean parameterResult = paramChecker.check();
-		String resultDescription = Text.fromIterable(paramChecker.getResultDescription(), Text.newLine());
+		final boolean parameterResult = paramChecker.check();
+		final String resultDescription = Text.fromIterable(paramChecker.getResultDescription(), Text.newLine());
 		if (!parameterResult) {
 			throw new ParameterException("Check application arguments:\n" + resultDescription);
 		}
@@ -53,22 +57,34 @@ public class NuFiApplication extends BasicLoggedApplication {
 
 	public NuFiApplication(final ApplicationProperties properties, final NuFiConfiguration configuration) {
 		super();
+		this.configuration = configuration;
 		this.session = new BasicSession(properties, new SimpleEventBus(), getLogger());
-		TargetFinderFactory targetFinderFactory = new TargetFinderFactory(this.session, configuration);
+		final TargetFinderFactory targetFinderFactory = new TargetFinderFactory(this.session, configuration);
 		this.targetFinder = targetFinderFactory.getTargetFinder();
-		TargetPointSerializerFactory targetPointSerializerFactory = new TargetPointSerializerFactory(this.session, configuration);
+		final TargetPointSerializerFactory targetPointSerializerFactory = new TargetPointSerializerFactory(this.session, configuration);
 		this.serializer = targetPointSerializerFactory.getTargetFinder();
+		final ResultDisplayFactory displayFactory = new ResultDisplayFactory(this.session);
+		this.displayer = displayFactory.getResultDisplayer();
 	}
 
 	@Override
 	public void start() {
 		getLogger().info("Application started");
-		Timing timing = new Timing();
+		findTargets();
+		serializeTargets();
+		displayResults();
+	}
+
+	private void findTargets() {
+		final Timing timing = new Timing();
 		timing.start();
 		this.targetFinder.findTargets();
 		timing.stop();
 		getLogger().info("Target detection took " + timing.getMilis() + " miliseconds.");
-		serializeTargets();
+	}
+
+	private void displayResults() {
+		this.displayer.displayResult(this.targetFinder.getDetailedResults());
 	}
 
 	private void serializeTargets() {

@@ -4,6 +4,7 @@ import hochberger.utilities.application.session.BasicSession;
 import hochberger.utilities.application.session.SessionBasedObject;
 import ij.IJ;
 import ij.ImagePlus;
+import ij.gui.Roi;
 import ij.measure.Measurements;
 import ij.measure.ResultsTable;
 import ij.plugin.filter.ParticleAnalyzer;
@@ -18,7 +19,6 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import view.ResultDisplayFactory;
 import model.NuFiImage;
 import controller.configuration.NuFiConfiguration;
 
@@ -26,21 +26,20 @@ public class ImagejTargetFinder extends SessionBasedObject implements TargetFind
 
 	private final NuFiConfiguration configuration;
 	private final List<TargetPoint> targets;
-	private final ResultDisplayFactory displayFactory;
+	private Roi[] rois;
 
 	public ImagejTargetFinder(final BasicSession session, final NuFiConfiguration configuration) {
 		super(session);
 		this.configuration = configuration;
 		this.targets = new LinkedList<>();
-		this.displayFactory = new ResultDisplayFactory(session);
 	}
 
 	@Override
 	public void findTargets() {
 		final NuFiImage nuFiImage = this.configuration.getNuFiImage();
-		final RoiManager rois = findRoisIn(nuFiImage);
-		findTargetsIn(nuFiImage, rois);
-		this.displayFactory.getResultDisplayer().displayResult(nuFiImage.getChannel1(), rois.getRoisAsArray(), this.targets);
+		final RoiManager roiManager = findRoisIn(nuFiImage);
+		this.rois = roiManager.getRoisAsArray();
+		findTargetsIn(nuFiImage, roiManager);
 	}
 
 	private RoiManager findRoisIn(final NuFiImage image) {
@@ -155,5 +154,10 @@ public class ImagejTargetFinder extends SessionBasedObject implements TargetFind
 		public int compare(final ResultsTable o1, final ResultsTable o2) {
 			return o1.getCounter() - o2.getCounter();
 		}
+	}
+
+	@Override
+	public DetailedResults getDetailedResults() {
+		return new DetailedResults(this.configuration.getNuFiImage().getChannel1(), RoiToPolygonConverter.convert(this.rois), this.targets);
 	}
 }

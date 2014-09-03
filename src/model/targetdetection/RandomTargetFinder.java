@@ -3,7 +3,9 @@ package model.targetdetection;
 import hochberger.utilities.application.session.BasicSession;
 import hochberger.utilities.application.session.SessionBasedObject;
 
+import java.awt.Polygon;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
@@ -27,9 +29,9 @@ public class RandomTargetFinder extends SessionBasedObject implements TargetFind
 	}
 
 	private void generateRandomTargets(final int amount) {
-		Random targetGenerator = new Random();
+		final Random targetGenerator = new Random();
 		for (int i = 1; i <= amount; i++) {
-			TargetPoint newTarget = new TargetPoint(targetGenerator.nextInt(1000), targetGenerator.nextInt(1000));
+			final TargetPoint newTarget = new TargetPoint(targetGenerator.nextInt(1000), targetGenerator.nextInt(1000));
 			logger().info("Found target: " + newTarget);
 			this.targets.add(newTarget);
 		}
@@ -39,5 +41,10 @@ public class RandomTargetFinder extends SessionBasedObject implements TargetFind
 	@Override
 	public List<TargetPoint> getTargets() {
 		return this.targets;
+	}
+
+	@Override
+	public DetailedResults getDetailedResults() {
+		return new DetailedResults(null, new LinkedList<Polygon>(), this.targets);
 	}
 }
