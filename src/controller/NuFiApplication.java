@@ -27,7 +27,6 @@ public class NuFiApplication extends BasicLoggedApplication {
 	private final TargetFinder targetFinder;
 	private final TargetPointSerializer serializer;
 	private final ResultDisplayer displayer;
-	private final NuFiConfiguration configuration;
 
 	public static void main(final String[] args) {
 		setUpLoggingServices(NuFiApplication.class);
@@ -57,7 +56,6 @@ public class NuFiApplication extends BasicLoggedApplication {
 
 	public NuFiApplication(final ApplicationProperties properties, final NuFiConfiguration configuration) {
 		super();
-		this.configuration = configuration;
 		this.session = new BasicSession(properties, new SimpleEventBus(), getLogger());
 		final TargetFinderFactory targetFinderFactory = new TargetFinderFactory(this.session, configuration);
 		this.targetFinder = targetFinderFactory.getTargetFinder();
