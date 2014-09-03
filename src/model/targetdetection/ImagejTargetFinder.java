@@ -48,7 +48,7 @@ public class ImagejTargetFinder extends SessionBasedObject implements TargetFind
 		channel3.getProcessor().setAutoThreshold(Method.Default, true);
 		final RoiManager manager = new RoiManager(true);
 		final ResultsTable table = new ResultsTable();
-		final int options = ParticleAnalyzer.ADD_TO_MANAGER | ParticleAnalyzer.IN_SITU_SHOW | ParticleAnalyzer.SHOW_OUTLINES | ParticleAnalyzer.EXCLUDE_EDGE_PARTICLES;
+		final int options = ParticleAnalyzer.ADD_TO_MANAGER | ParticleAnalyzer.IN_SITU_SHOW | ParticleAnalyzer.SHOW_OUTLINES;
 		final int measurements = 0;
 		ParticleAnalyzer.setResultsTable(table);
 		ParticleAnalyzer.setRoiManager(manager);
@@ -91,7 +91,7 @@ public class ImagejTargetFinder extends SessionBasedObject implements TargetFind
 			final ImagePlus duplicate = workingImage.duplicate();
 			final ResultsTable roiResults = new ResultsTable();
 			final int roiOptions = ParticleAnalyzer.EXCLUDE_EDGE_PARTICLES;
-			final int roiMeasurements = Measurements.CENTROID;
+			final int roiMeasurements = Measurements.CENTROID | Measurements.AREA;
 			ParticleAnalyzer.setResultsTable(roiResults);
 			final ParticleAnalyzer roiAnalyzer = new ParticleAnalyzer(roiOptions, roiMeasurements, roiResults, 100, 500);
 			duplicate.getProcessor().setThreshold(threshold, 255f, ImageProcessor.RED_LUT);
