@@ -1,5 +1,8 @@
 /logs/
+
 /bin/
+
 .checkstyle
+
 /examples/test.txt
 /examples/*/results/*
