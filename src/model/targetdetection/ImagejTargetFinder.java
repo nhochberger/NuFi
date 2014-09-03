@@ -18,8 +18,8 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import view.ResultDisplayFactory;
 import model.NuFiImage;
-import model.display.ResultDisplayFactory;
 import controller.configuration.NuFiConfiguration;
 
 public class ImagejTargetFinder extends SessionBasedObject implements TargetFinder {
