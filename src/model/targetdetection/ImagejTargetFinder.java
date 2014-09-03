@@ -10,14 +10,10 @@ import ij.measure.ResultsTable;
 import ij.plugin.filter.ParticleAnalyzer;
 import ij.plugin.frame.RoiManager;
 import ij.process.AutoThresholder.Method;
-import ij.process.ImageProcessor;
 
 import java.awt.Rectangle;
-import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 import model.NuFiImage;
 import controller.configuration.NuFiConfiguration;
@@ -58,102 +54,37 @@ public class ImagejTargetFinder extends SessionBasedObject implements TargetFind
 		return manager;
 	}
 
-	private void findTargetsIn(final NuFiImage nuFiImage, final RoiManager rois) {
+	private void findTargetsIn(final NuFiImage nuFiImage, final RoiManager roiManager) {
 		final ImagePlus channel1 = IJ.openImage(nuFiImage.getChannel1().getAbsolutePath());
-		for (int i = 0; i < rois.getCount(); i++) {
-			logger().info("Beginning analysis of roi #" + i);
-			rois.select(channel1, i);
-			final Rectangle roiBounds = rois.getRoi(i).getBounds();
+		for (int i = 0; i < roiManager.getCount(); i++) {
+			logger().info("Beginning analysis of roi " + (i + 1));
+			roiManager.select(channel1, i);
+			final Rectangle roiBounds = roiManager.getRoi(i).getBounds();
 			final int xOffset = (int) roiBounds.getX();
 			final int yOffset = (int) roiBounds.getY();
 			final ImagePlus workingImage = channel1.duplicate();
-			rois.select(workingImage, i);
+			roiManager.select(workingImage, i);
 			workingImage.getProcessor().setAutoThreshold(Method.MaxEntropy, true);
-			final int autoThreshold = workingImage.getProcessor().getAutoThreshold();
-			int highestThreshold = (int) (autoThreshold * 1.4);
-			highestThreshold = highestThreshold <= 255 ? highestThreshold : 255;
-			final int lowestThreshold = (int) (autoThreshold * 0.6);
-			final SortedSet<ResultsTable> results = new TreeSet<>(new ResultsTableComparator());
-			analyze(workingImage, autoThreshold + 1, highestThreshold, results);
-			analyze(workingImage, lowestThreshold, autoThreshold, results);
-			final ResultsTable maximumEntries = results.last();
-			for (int j = 0; j < maximumEntries.getCounter(); j++) {
-				final int x = (int) (maximumEntries.getValue("X", j) + xOffset);
-				final int y = (int) (maximumEntries.getValue("Y", j) + yOffset);
+			final ResultsTable roiResults = new ResultsTable();
+			ParticleAnalyzer.setResultsTable(roiResults);
+			final int roiOptions = ParticleAnalyzer.EXCLUDE_EDGE_PARTICLES;
+			final int roiMeasurements = Measurements.CENTROID | Measurements.AREA;
+			// TODO: make min and max size configurable
+			final ParticleAnalyzer roiAnalyzer = new ParticleAnalyzer(roiOptions, roiMeasurements, roiResults, 50, 400);
+			final boolean roiAnalysisResult = roiAnalyzer.analyze(workingImage);
+			logger().info("Result of analysis: " + roiAnalysisResult);
+			logger().info("Found " + roiResults.getCounter() + " targets");
+			for (int j = 0; j < roiResults.getCounter(); j++) {
+				final int x = (int) (roiResults.getValue("X", j) + xOffset);
+				final int y = (int) (roiResults.getValue("Y", j) + yOffset);
 				this.targets.add(new TargetPoint(x, y));
 			}
 		}
 	}
 
-	private void analyze(final ImagePlus workingImage, final int lowestThreshold, final int highestThreshold, final SortedSet<ResultsTable> results) {
-		for (int threshold = highestThreshold; lowestThreshold <= threshold; threshold -= 5) {
-			final ImagePlus duplicate = workingImage.duplicate();
-			final ResultsTable roiResults = new ResultsTable();
-			final int roiOptions = ParticleAnalyzer.EXCLUDE_EDGE_PARTICLES;
-			final int roiMeasurements = Measurements.CENTROID | Measurements.AREA;
-			ParticleAnalyzer.setResultsTable(roiResults);
-			final ParticleAnalyzer roiAnalyzer = new ParticleAnalyzer(roiOptions, roiMeasurements, roiResults, 100, 500);
-			duplicate.getProcessor().setThreshold(threshold, 255f, ImageProcessor.RED_LUT);
-			final boolean roiAnalysisResult = roiAnalyzer.analyze(duplicate);
-			logger().info("Result of analysis: " + roiAnalysisResult);
-			logger().info("Analysis with threshold " + threshold + " resulted in " + roiResults.getCounter() + " possible targets.");
-			results.add(roiResults);
-		}
-	}
-
-	// private void performInDepthAnalysisOf(final ImagePlus workingImage, final
-	// ResultsTable roiResults) {
-	// int autoThreshold = workingImage.getProcessor().getAutoThreshold();
-	// logger().info("Found no targets with automatic approach (auto threshold: "
-	// + autoThreshold + "). Performing indepth analysis.");
-	// int highestThreshold = (int) (autoThreshold * 1.3);
-	// highestThreshold = highestThreshold <= 255 ? highestThreshold : 255;
-	// int lowestThreshold = (int) (autoThreshold * 0.7);
-	// logger().info("Beginning indepth analysis with threshold between " +
-	// lowestThreshold + " and " + highestThreshold);
-	// for (int threshold = highestThreshold; lowestThreshold < threshold;
-	// threshold -= 10) {
-	// ImagePlus duplicate = workingImage.duplicate();
-	// duplicate.getProcessor().setThreshold(threshold, 255f,
-	// ImageProcessor.RED_LUT);
-	// int roiOptions = ParticleAnalyzer.EXCLUDE_EDGE_PARTICLES;
-	// int roiMeasurements = Measurements.CENTER_OF_MASS;
-	// ParticleAnalyzer.setResultsTable(roiResults);
-	// ParticleAnalyzer roiAnalyzer = new ParticleAnalyzer(roiOptions,
-	// roiMeasurements, roiResults, 25, 500);
-	// boolean roiAnalysisResult = roiAnalyzer.analyze(duplicate);
-	// logger().info("Result of analysis: " + roiAnalysisResult);
-	// System.err.println("count: " + roiResults.getCounter());
-	// }
-	// }
-
-	// private void analyzeSingleRoi(final ImageProcessor workingImage, final
-	// ResultsTable resultTable) {
-	// workingImage.getProcessor().setAutoThreshold(Method.MaxEntropy, true);
-	// int roiOptions = ParticleAnalyzer.EXCLUDE_EDGE_PARTICLES;
-	// int roiMeasurements = Measurements.CENTER_OF_MASS;
-	// ParticleAnalyzer.setResultsTable(resultTable);
-	// ParticleAnalyzer roiAnalyzer = new ParticleAnalyzer(roiOptions,
-	// roiMeasurements, resultTable, 50, 500);
-	// boolean roiAnalysisResult = roiAnalyzer.analyze(workingImage);
-	// logger().info("Result of analysis: " + roiAnalysisResult);
-	// }
-
 	@Override
 	public List<TargetPoint> getTargets() {
 		return this.targets;
-	}
-
-	public static class ResultsTableComparator implements Comparator<ResultsTable> {
-
-		public ResultsTableComparator() {
-			super();
-		}
-
-		@Override
-		public int compare(final ResultsTable o1, final ResultsTable o2) {
-			return o1.getCounter() - o2.getCounter();
-		}
 	}
 
 	@Override
