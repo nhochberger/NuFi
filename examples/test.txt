@@ -1,0 +1,6 @@
+# -- general parameters --
+source.folder = D:/test/origin5
+used.channels = Kanal1, Kanal2, Kanal3
+channel.filetype = png
+
+# -- picture analysis settings --

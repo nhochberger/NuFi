@@ -1,0 +1,10 @@
+# -- general parameters --
+source.folder = 
+
+used.channels = 
+#comma separated values, e.g.: channel1, channel2, channel2 
+
+channel.filetype = 
+#e.g.: png
+
+# -- picture analysis settings --
