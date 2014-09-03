@@ -45,7 +45,7 @@ public class ImagejTargetFinder extends SessionBasedObject implements TargetFind
 
 	private RoiManager findRoisIn(final NuFiImage image) {
 		ImagePlus channel3 = IJ.openImage(image.getChannel3().getAbsolutePath());
-		channel3.getProcessor().setAutoThreshold(Method.IsoData, true);
+		channel3.getProcessor().setAutoThreshold(Method.Default, true);
 		RoiManager manager = new RoiManager(true);
 		ResultsTable table = new ResultsTable();
 		int options = ParticleAnalyzer.ADD_TO_MANAGER | ParticleAnalyzer.IN_SITU_SHOW | ParticleAnalyzer.SHOW_OUTLINES | ParticleAnalyzer.EXCLUDE_EDGE_PARTICLES;
