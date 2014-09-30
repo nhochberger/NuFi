@@ -79,14 +79,20 @@ public class ImagejTargetFinder extends SessionBasedObject implements TargetFind
 			if (0 == roiResults.getCounter()) {
 				// perform in-depth analysis here
 			}
-			for (int j = 0; j < roiResults.getCounter(); j++) {
-				final int x = (int) (roiResults.getValue("X", j) + xOffset);
-				final int y = (int) (roiResults.getValue("Y", j) + yOffset);
-				this.targets.add(new TargetPoint(x, y));
-			}
 			if (0 == roiResults.getCounter()) {
+				logger().info("Found no targets in ROI " + i + ". Using center of ROI as target.");
 				this.targets.add(new TargetPoint((int) roiBounds.getCenterX(), (int) roiBounds.getCenterY()));
+				continue;
 			}
+			int indexOfLargest = 0;
+			for (int j = 0; j < roiResults.getCounter(); j++) {
+				if (roiResults.getValue("Area", indexOfLargest) < roiResults.getValue("Area", j)) {
+					indexOfLargest = j;
+				}
+			}
+			final int x = (int) (roiResults.getValue("X", indexOfLargest) + xOffset);
+			final int y = (int) (roiResults.getValue("Y", indexOfLargest) + yOffset);
+			this.targets.add(new TargetPoint(x, y));
 		}
 	}
 
