@@ -76,6 +76,9 @@ public class ImagejTargetFinder extends SessionBasedObject implements TargetFind
 			final boolean roiAnalysisResult = roiAnalyzer.analyze(workingImage);
 			logger().info("Result of analysis: " + roiAnalysisResult);
 			logger().info("Found " + roiResults.getCounter() + " targets");
+			if (0 == roiResults.getCounter()) {
+				// perform in-depth analysis here
+			}
 			for (int j = 0; j < roiResults.getCounter(); j++) {
 				final int x = (int) (roiResults.getValue("X", j) + xOffset);
 				final int y = (int) (roiResults.getValue("Y", j) + yOffset);
