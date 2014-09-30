@@ -43,7 +43,7 @@ public class ImagejTargetFinder extends SessionBasedObject implements TargetFind
 		channel3.getProcessor().setAutoThreshold(Method.Default, true);
 		final RoiManager manager = new RoiManager(true);
 		final ResultsTable table = new ResultsTable();
-		final int options = ParticleAnalyzer.ADD_TO_MANAGER | ParticleAnalyzer.IN_SITU_SHOW | ParticleAnalyzer.SHOW_OUTLINES;
+		final int options = ParticleAnalyzer.ADD_TO_MANAGER | ParticleAnalyzer.IN_SITU_SHOW;
 		final int measurements = 0;
 		ParticleAnalyzer.setResultsTable(table);
 		ParticleAnalyzer.setRoiManager(manager);
@@ -56,6 +56,9 @@ public class ImagejTargetFinder extends SessionBasedObject implements TargetFind
 
 	private void findTargetsIn(final NuFiImage nuFiImage, final RoiManager roiManager) {
 		final ImagePlus channel1 = IJ.openImage(nuFiImage.getChannel1().getAbsolutePath());
+		final int minSize = this.configuration.getMinimumNucleolusSize();
+		final int maxSize = this.configuration.getMaximumNucleolusSize();
+		logger().info("Using minimum nucleolus size of " + minSize + " and maximum nucleolus size of " + maxSize);
 		for (int i = 0; i < roiManager.getCount(); i++) {
 			logger().info("Beginning analysis of roi " + (i + 1));
 			roiManager.select(channel1, i);
@@ -69,8 +72,7 @@ public class ImagejTargetFinder extends SessionBasedObject implements TargetFind
 			ParticleAnalyzer.setResultsTable(roiResults);
 			final int roiOptions = ParticleAnalyzer.EXCLUDE_EDGE_PARTICLES;
 			final int roiMeasurements = Measurements.CENTROID | Measurements.AREA;
-			// TODO: make min and max size configurable
-			final ParticleAnalyzer roiAnalyzer = new ParticleAnalyzer(roiOptions, roiMeasurements, roiResults, 50, 400);
+			final ParticleAnalyzer roiAnalyzer = new ParticleAnalyzer(roiOptions, roiMeasurements, roiResults, minSize, maxSize);
 			final boolean roiAnalysisResult = roiAnalyzer.analyze(workingImage);
 			logger().info("Result of analysis: " + roiAnalysisResult);
 			logger().info("Found " + roiResults.getCounter() + " targets");

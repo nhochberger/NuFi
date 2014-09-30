@@ -9,6 +9,9 @@ public interface NuFiConfigurationConstants {
 	public final static String USED_CHANNELS = "used.channels";
 	public final static String CHANNEL_FILETYPE = "channel.filetype";
 	public final static String CHANNEL_SEPARATOR = ",";
+	public final static String NUCLEOLUS_AVERAGE_SIZE = "nucleolus.average";
+	public final static String NUCLEOLUS_MIN_SIZE_PERCENTAGE = "nucleolus.min";
+	public final static String NUCLEOLUS_MAX_SIZE_PERCENTAGE = "nucleolus.max";
 
 	public final static List<String> MANDATORY_ENTRIES = Arrays.asList(SOURCE_FOLDER, USED_CHANNELS, CHANNEL_FILETYPE);
 }

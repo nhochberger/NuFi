@@ -27,21 +27,21 @@ public class NuFiConfiguration {
 	}
 
 	public File getSourceFolder() {
-		return new File(getCustomProperty(NuFiConfigurationConstants.SOURCE_FOLDER));
+		return new File(getProperty(NuFiConfigurationConstants.SOURCE_FOLDER));
 	}
 
 	public String getChannelSeparator() {
-		return getCustomProperty(NuFiConfigurationConstants.CHANNEL_SEPARATOR);
+		return getProperty(NuFiConfigurationConstants.CHANNEL_SEPARATOR);
 	}
 
 	public Iterable<String> getChannelDesignators() {
-		final String channelsProperty = getCustomProperty(NuFiConfigurationConstants.USED_CHANNELS);
+		final String channelsProperty = getProperty(NuFiConfigurationConstants.USED_CHANNELS);
 		final String channelSeparator = NuFiConfigurationConstants.CHANNEL_SEPARATOR;
 		return Text.trimAll(Text.toIterable(channelsProperty, channelSeparator));
 	}
 
 	public String getImageFiletype() {
-		return getCustomProperty(NuFiConfigurationConstants.CHANNEL_FILETYPE);
+		return getProperty(NuFiConfigurationConstants.CHANNEL_FILETYPE);
 	}
 
 	public NuFiImage getNuFiImage() {
@@ -49,7 +49,19 @@ public class NuFiConfiguration {
 		return fileBuilder.getNuFiImage();
 	}
 
-	public String getCustomProperty(final String key) {
+	public int getMinimumNucleolusSize() {
+		final int defaultSize = Integer.valueOf(getProperty(NuFiConfigurationConstants.NUCLEOLUS_AVERAGE_SIZE));
+		final int minPercentage = Integer.valueOf(getProperty(NuFiConfigurationConstants.NUCLEOLUS_MIN_SIZE_PERCENTAGE));
+		return (int) (defaultSize * (minPercentage / 100f));
+	}
+
+	public int getMaximumNucleolusSize() {
+		final int defaultSize = Integer.valueOf(getProperty(NuFiConfigurationConstants.NUCLEOLUS_AVERAGE_SIZE));
+		final int maxPercentage = Integer.valueOf(getProperty(NuFiConfigurationConstants.NUCLEOLUS_MAX_SIZE_PERCENTAGE));
+		return (int) (defaultSize * (maxPercentage / 100f));
+	}
+
+	public String getProperty(final String key) {
 		if (!this.properties.containsKey(key)) {
 			throw new MissingConfigurationEntryException(key);
 		}

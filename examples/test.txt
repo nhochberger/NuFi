@@ -4,3 +4,11 @@ used.channels = Kanal1, Kanal2, Kanal3
 channel.filetype = png
 
 # -- picture analysis settings --
+# a feasible average size is about 90pixel x 90pixel,
+# min and max sizes are to be provided as percentage of the average size
+# e.g.: nucleolus.average = 90
+#       nucleolus.min = 75
+#       nucleolus.max = 300
+nucleolus.average = 90
+nucleolus.min = 50
+nucleolus.max = 400
