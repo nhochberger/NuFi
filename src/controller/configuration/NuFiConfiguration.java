@@ -35,8 +35,8 @@ public class NuFiConfiguration {
 	}
 
 	public Iterable<String> getChannelDesignators() {
-		String channelsProperty = this.properties.getProperty(NuFiConfigurationConstants.USED_CHANNELS);
-		String channelSeparator = NuFiConfigurationConstants.CHANNEL_SEPARATOR;
+		final String channelsProperty = this.properties.getProperty(NuFiConfigurationConstants.USED_CHANNELS);
+		final String channelSeparator = NuFiConfigurationConstants.CHANNEL_SEPARATOR;
 		return Text.trimAll(Text.toIterable(channelsProperty, channelSeparator));
 	}
 
@@ -45,16 +45,19 @@ public class NuFiConfiguration {
 	}
 
 	public NuFiImage getNuFiImage() {
-		ChannelFileBuilder fileBuilder = new ChannelFileBuilder(this.properties);
+		final ChannelFileBuilder fileBuilder = new ChannelFileBuilder(this.properties);
 		return fileBuilder.getNuFiImage();
 	}
 
 	public String getCustomProperty(final String key) {
-		return this.properties.getProperty(key, Text.empty());
+		if (!this.properties.containsKey(key)) {
+			throw new MissingConfigurationEntryException(key);
+		}
+		return this.properties.getProperty(key);
 	}
 
 	public static NuFiConfiguration createFrom(final String filePath) throws IOException, ConfigurationException {
-		Properties properties = LoadProperties.fromExtern(filePath);
+		final Properties properties = LoadProperties.fromExtern(filePath);
 		validateProperties(properties);
 		return new NuFiConfiguration(properties);
 	}
@@ -66,8 +69,8 @@ public class NuFiConfiguration {
 	}
 
 	private static void validateEntryExistence(final Properties properties) throws InvalidConfigurationException {
-		List<String> missingEntries = new LinkedList<String>();
-		for (String key : NuFiConfigurationConstants.MANDATORY_ENTRIES) {
+		final List<String> missingEntries = new LinkedList<String>();
+		for (final String key : NuFiConfigurationConstants.MANDATORY_ENTRIES) {
 			if (Text.empty().equals(properties.getProperty(key, Text.empty()))) {
 				missingEntries.add(key);
 			}
@@ -79,7 +82,7 @@ public class NuFiConfiguration {
 	}
 
 	private static void validateSourceFolderExistence(final Properties properties) throws MissingSourceFolderException {
-		FileChecker fileChecker = new FileChecker(sourceFolder(properties));
+		final FileChecker fileChecker = new FileChecker(sourceFolder(properties));
 		fileChecker.addFileAspect(new ExistingFolderFileAspect());
 		if (!fileChecker.check()) {
 			throw new MissingSourceFolderException(Text.fromIterable(fileChecker.getResultDescriptions(), ", "));
@@ -92,11 +95,11 @@ public class NuFiConfiguration {
 	}
 
 	private static void validateChannelExistence(final Properties properties) throws MissingChannelFilesException {
-		String channelsProperty = properties.getProperty(NuFiConfigurationConstants.USED_CHANNELS);
-		String channelSeparator = NuFiConfigurationConstants.CHANNEL_SEPARATOR;
-		Iterable<String> channels = Text.trimAll(Text.toIterable(channelsProperty, channelSeparator));
-		ChannelFileBuilder builder = new ChannelFileBuilder(properties);
-		Iterable<File> channelFiles = builder.getChannelFiles();
+		final String channelsProperty = properties.getProperty(NuFiConfigurationConstants.USED_CHANNELS);
+		final String channelSeparator = NuFiConfigurationConstants.CHANNEL_SEPARATOR;
+		final Iterable<String> channels = Text.trimAll(Text.toIterable(channelsProperty, channelSeparator));
+		final ChannelFileBuilder builder = new ChannelFileBuilder(properties);
+		final Iterable<File> channelFiles = builder.getChannelFiles();
 		if (Iterables.size(channelFiles) != Iterables.size(channels)) {
 			throw new MissingChannelFilesException("Number of expected channels does not match actual number.\nExpected channels: " + channelsProperty + "\nfound: "
 					+ Text.fromIterable(channelFiles, ", "));
@@ -138,6 +141,13 @@ public class NuFiConfiguration {
 
 		public MissingChannelFilesException(final String description) {
 			super("Channel files error: " + description);
+		}
+	}
+
+	public static class MissingConfigurationEntryException extends RuntimeException {
+
+		public MissingConfigurationEntryException(final String key) {
+			super("Configuration lacks desired key: '" + key + "'.");
 		}
 	}
 }
