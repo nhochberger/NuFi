@@ -27,21 +27,21 @@ public class NuFiConfiguration {
 	}
 
 	public File getSourceFolder() {
-		return new File(this.properties.getProperty(NuFiConfigurationConstants.SOURCE_FOLDER));
+		return new File(getCustomProperty(NuFiConfigurationConstants.SOURCE_FOLDER));
 	}
 
 	public String getChannelSeparator() {
-		return this.properties.getProperty(NuFiConfigurationConstants.CHANNEL_SEPARATOR);
+		return getCustomProperty(NuFiConfigurationConstants.CHANNEL_SEPARATOR);
 	}
 
 	public Iterable<String> getChannelDesignators() {
-		final String channelsProperty = this.properties.getProperty(NuFiConfigurationConstants.USED_CHANNELS);
+		final String channelsProperty = getCustomProperty(NuFiConfigurationConstants.USED_CHANNELS);
 		final String channelSeparator = NuFiConfigurationConstants.CHANNEL_SEPARATOR;
 		return Text.trimAll(Text.toIterable(channelsProperty, channelSeparator));
 	}
 
 	public String getImageFiletype() {
-		return this.properties.getProperty(NuFiConfigurationConstants.CHANNEL_FILETYPE);
+		return getCustomProperty(NuFiConfigurationConstants.CHANNEL_FILETYPE);
 	}
 
 	public NuFiImage getNuFiImage() {
