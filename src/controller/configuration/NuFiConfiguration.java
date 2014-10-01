@@ -61,6 +61,10 @@ public class NuFiConfiguration {
 		return (int) (defaultSize * (maxPercentage / 100f));
 	}
 
+	public int getInDepthRange() {
+		return Integer.valueOf(getProperty(NuFiConfigurationConstants.IN_DEPTH_RANGE));
+	}
+
 	public String getProperty(final String key) {
 		if (!this.properties.containsKey(key)) {
 			throw new MissingConfigurationEntryException(key);

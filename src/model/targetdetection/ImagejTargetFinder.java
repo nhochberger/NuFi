@@ -80,10 +80,16 @@ public class ImagejTargetFinder extends SessionBasedObject implements TargetFind
 		final ParticleAnalyzer roiAnalyzer = new ParticleAnalyzer(roiOptions, roiMeasurements, roiResults, minSize, maxSize);
 		final boolean roiAnalysisResult = roiAnalyzer.analyze(workingImage);
 		logger().info("Result of analysis: " + roiAnalysisResult);
-		logger().info("Found " + roiResults.getCounter() + " targets using basic analysis.");
+		logger().info("Found " + roiResults.getCounter() + " targets using basic analysis (threshold was " + workingImage.getProcessor().getAutoThreshold() + ").");
 		if (0 == roiResults.getCounter()) {
 			logger().info("Performing in-depth analysis");
-			// perform in-depth analysis here
+			final int autoThreshold = workingImage.getProcessor().getAutoThreshold();
+			final int minThreshold = minThreshold(autoThreshold);
+			final int maxThreshold = maxThreshold(autoThreshold);
+			logger().info("Threshold range: [" + minThreshold + "; " + maxThreshold + "]");
+			for (int threshold = minThreshold; threshold <= maxThreshold; threshold++) {
+
+			}
 		}
 		if (0 == roiResults.getCounter()) {
 			logger().info("Found no targets in ROI " + i + ". Using center of ROI as target.");
@@ -100,6 +106,22 @@ public class ImagejTargetFinder extends SessionBasedObject implements TargetFind
 		final int x = (int) (roiResults.getValue("X", indexOfLargest) + xOffset);
 		final int y = (int) (roiResults.getValue("Y", indexOfLargest) + yOffset);
 		this.targets.add(new TargetPoint(x, y));
+	}
+
+	private int maxThreshold(final int autoThreshold) {
+		final int result = autoThreshold + this.configuration.getInDepthRange();
+		if (255 < result) {
+			return 255;
+		}
+		return result;
+	}
+
+	private int minThreshold(final int autoThreshold) {
+		final int result = autoThreshold - this.configuration.getInDepthRange();
+		if (0 > result) {
+			return 0;
+		}
+		return result;
 	}
 
 	@Override
