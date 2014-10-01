@@ -60,40 +60,46 @@ public class ImagejTargetFinder extends SessionBasedObject implements TargetFind
 		final int maxSize = this.configuration.getMaximumNucleolusSize();
 		logger().info("Using minimum nucleolus size of " + minSize + " and maximum nucleolus size of " + maxSize);
 		for (int i = 0; i < roiManager.getCount(); i++) {
-			logger().info("Beginning analysis of roi " + (i + 1));
-			roiManager.select(channel1, i);
-			final Rectangle roiBounds = roiManager.getRoi(i).getBounds();
-			final int xOffset = (int) roiBounds.getX();
-			final int yOffset = (int) roiBounds.getY();
-			final ImagePlus workingImage = channel1.duplicate();
-			roiManager.select(workingImage, i);
-			workingImage.getProcessor().setAutoThreshold(Method.MaxEntropy, true);
-			final ResultsTable roiResults = new ResultsTable();
-			ParticleAnalyzer.setResultsTable(roiResults);
-			final int roiOptions = ParticleAnalyzer.EXCLUDE_EDGE_PARTICLES;
-			final int roiMeasurements = Measurements.CENTROID | Measurements.AREA;
-			final ParticleAnalyzer roiAnalyzer = new ParticleAnalyzer(roiOptions, roiMeasurements, roiResults, minSize, maxSize);
-			final boolean roiAnalysisResult = roiAnalyzer.analyze(workingImage);
-			logger().info("Result of analysis: " + roiAnalysisResult);
-			logger().info("Found " + roiResults.getCounter() + " targets");
-			if (0 == roiResults.getCounter()) {
-				// perform in-depth analysis here
-			}
-			if (0 == roiResults.getCounter()) {
-				logger().info("Found no targets in ROI " + i + ". Using center of ROI as target.");
-				this.targets.add(new TargetPoint((int) roiBounds.getCenterX(), (int) roiBounds.getCenterY()));
-				continue;
-			}
-			int indexOfLargest = 0;
-			for (int j = 0; j < roiResults.getCounter(); j++) {
-				if (roiResults.getValue("Area", indexOfLargest) < roiResults.getValue("Area", j)) {
-					indexOfLargest = j;
-				}
-			}
-			final int x = (int) (roiResults.getValue("X", indexOfLargest) + xOffset);
-			final int y = (int) (roiResults.getValue("Y", indexOfLargest) + yOffset);
-			this.targets.add(new TargetPoint(x, y));
+			performAnalysisOfRoi(i, roiManager, channel1, minSize, maxSize);
 		}
+	}
+
+	private void performAnalysisOfRoi(final int i, final RoiManager roiManager, final ImagePlus channel1, final int minSize, final int maxSize) {
+		logger().info("Beginning analysis of roi " + (i + 1));
+		roiManager.select(channel1, i);
+		final Rectangle roiBounds = roiManager.getRoi(i).getBounds();
+		final int xOffset = (int) roiBounds.getX();
+		final int yOffset = (int) roiBounds.getY();
+		final ImagePlus workingImage = channel1.duplicate();
+		roiManager.select(workingImage, i);
+		workingImage.getProcessor().setAutoThreshold(Method.MaxEntropy, true);
+		final ResultsTable roiResults = new ResultsTable();
+		ParticleAnalyzer.setResultsTable(roiResults);
+		final int roiOptions = ParticleAnalyzer.EXCLUDE_EDGE_PARTICLES;
+		final int roiMeasurements = Measurements.CENTROID | Measurements.AREA;
+		final ParticleAnalyzer roiAnalyzer = new ParticleAnalyzer(roiOptions, roiMeasurements, roiResults, minSize, maxSize);
+		final boolean roiAnalysisResult = roiAnalyzer.analyze(workingImage);
+		logger().info("Result of analysis: " + roiAnalysisResult);
+		logger().info("Found " + roiResults.getCounter() + " targets using basic analysis.");
+		if (0 == roiResults.getCounter()) {
+			logger().info("Performing in-depth analysis");
+			// perform in-depth analysis here
+		}
+		if (0 == roiResults.getCounter()) {
+			logger().info("Found no targets in ROI " + i + ". Using center of ROI as target.");
+			this.targets.add(new TargetPoint((int) roiBounds.getCenterX(), (int) roiBounds.getCenterY()));
+			return;
+		}
+		int indexOfLargest = 0;
+		for (int j = 0; j < roiResults.getCounter(); j++) {
+			if (roiResults.getValue("Area", indexOfLargest) < roiResults.getValue("Area", j)) {
+				indexOfLargest = j;
+			}
+		}
+		logger().info("Found largest target with an area of " + roiResults.getValue("Area", indexOfLargest));
+		final int x = (int) (roiResults.getValue("X", indexOfLargest) + xOffset);
+		final int y = (int) (roiResults.getValue("Y", indexOfLargest) + yOffset);
+		this.targets.add(new TargetPoint(x, y));
 	}
 
 	@Override
