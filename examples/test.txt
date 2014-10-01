@@ -1,5 +1,5 @@
 # -- general parameters --
-source.folder = examples/origin2
+source.folder = examples/origin
 used.channels = Kanal1, Kanal2, Kanal3
 channel.filetype = png
 
@@ -12,3 +12,4 @@ channel.filetype = png
 nucleolus.average = 90
 nucleolus.min = 50
 nucleolus.max = 400
+indepth.range = 25

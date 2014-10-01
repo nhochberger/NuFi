@@ -10,6 +10,7 @@ import ij.measure.ResultsTable;
 import ij.plugin.filter.ParticleAnalyzer;
 import ij.plugin.frame.RoiManager;
 import ij.process.AutoThresholder.Method;
+import ij.process.ImageProcessor;
 
 import java.awt.Rectangle;
 import java.util.LinkedList;
@@ -87,9 +88,15 @@ public class ImagejTargetFinder extends SessionBasedObject implements TargetFind
 			final int minThreshold = minThreshold(autoThreshold);
 			final int maxThreshold = maxThreshold(autoThreshold);
 			logger().info("Threshold range: [" + minThreshold + "; " + maxThreshold + "]");
-			for (int threshold = minThreshold; threshold <= maxThreshold; threshold++) {
-
+			for (int threshold = maxThreshold; threshold >= minThreshold; threshold--) {
+				workingImage.getProcessor().setThreshold(threshold, 255f, ImageProcessor.RED_LUT);
+				roiAnalyzer.analyze(workingImage);
+				if (0 < roiResults.getCounter()) {
+					logger().info("Found target with threshold: " + threshold + ". Exiting in-depth analysis.");
+					break;
+				}
 			}
+			logger().info("In-depth analysis finished. Found " + roiResults.getCounter() + " targets.");
 		}
 		if (0 == roiResults.getCounter()) {
 			logger().info("Found no targets in ROI " + i + ". Using center of ROI as target.");
