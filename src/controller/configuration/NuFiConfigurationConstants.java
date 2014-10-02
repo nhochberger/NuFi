@@ -14,5 +14,6 @@ public interface NuFiConfigurationConstants {
 	public final static String NUCLEOLUS_MAX_SIZE_PERCENTAGE = "nucleolus.max";
 	public static final String IN_DEPTH_RANGE = "indepth.range";
 
-	public final static List<String> MANDATORY_ENTRIES = Arrays.asList(SOURCE_FOLDER, USED_CHANNELS, CHANNEL_FILETYPE);
+	public final static List<String> MANDATORY_ENTRIES = Arrays.asList(SOURCE_FOLDER, USED_CHANNELS, CHANNEL_FILETYPE, NUCLEOLUS_AVERAGE_SIZE, NUCLEOLUS_MIN_SIZE_PERCENTAGE,
+			NUCLEOLUS_MAX_SIZE_PERCENTAGE, IN_DEPTH_RANGE);
 }
