@@ -1,8 +1,8 @@
 package view;
 
-import model.targetdetection.ImageAnalysisResults;
+import java.awt.Image;
 
 public interface ResultDisplayer {
 
-	public void displayResult(ImageAnalysisResults results);
+	public void displayResult(Image resultImage);
 }

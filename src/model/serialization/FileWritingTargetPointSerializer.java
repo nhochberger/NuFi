@@ -63,18 +63,13 @@ public class FileWritingTargetPointSerializer extends SessionBasedObject impleme
 	}
 
 	private File getDestinationFolder() {
-		String destinationFolderPath = this.configuration.getSourceFolder().getAbsolutePath() + "/results";
-		File destinationFile = new File(destinationFolderPath);
-		destinationFile.mkdirs();
-		return destinationFile;
+		return new DestinationFolderBuilder().buildDestinationFolderFrom(this.configuration);
 	}
 
 	private File getDestinationFile() {
 		String channel1Filename = this.configuration.getNuFiImage().getChannel1().getName();
 		String channel1Designator = Iterables.get(this.configuration.getChannelDesignators(), 0);
 		String filetype = this.configuration.getImageFiletype();
-		String result = channel1Filename.replace(channel1Designator, "targets").replace(filetype, "txt");
-
 		String resultFilename = channel1Filename.replace(channel1Designator, "targets").replace(filetype, "txt");
 		String destinationFileName = getDestinationFolder().getAbsolutePath() + "/" + resultFilename;
 		File destination = new File(destinationFileName);

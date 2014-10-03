@@ -2,7 +2,8 @@ package view;
 
 import hochberger.utilities.application.session.BasicSession;
 import hochberger.utilities.application.session.SessionBasedObject;
-import model.targetdetection.ImageAnalysisResults;
+
+import java.awt.Image;
 
 public class ResultDisplayFactory extends SessionBasedObject {
 
@@ -30,8 +31,9 @@ public class ResultDisplayFactory extends SessionBasedObject {
 		}
 
 		@Override
-		public void displayResult(final ImageAnalysisResults results) {
-			// do nothing on purpose here
+		public void displayResult(final Image resultImage) {
+			// TODO Auto-generated method stub
+
 		}
 	}
 }
