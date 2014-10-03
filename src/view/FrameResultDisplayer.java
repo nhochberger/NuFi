@@ -19,7 +19,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 
-import model.targetdetection.DetailedResults;
+import model.targetdetection.ImageAnalysisResults;
 import model.targetdetection.TargetPoint;
 
 public class FrameResultDisplayer implements ResultDisplayer {
@@ -29,7 +29,7 @@ public class FrameResultDisplayer implements ResultDisplayer {
 	}
 
 	@Override
-	public void displayResult(final DetailedResults results) {
+	public void displayResult(final ImageAnalysisResults results) {
 		final EDTSafeFrame frame = new EDTSafeFrame("Result") {
 
 			@Override
@@ -59,7 +59,7 @@ public class FrameResultDisplayer implements ResultDisplayer {
 							graphics.drawPolygon(polygon);
 						}
 						int number = 0;
-						for (final TargetPoint target : results.getTargets()) {
+						for (final TargetPoint target : results.getNucleoliTargets()) {
 							drawCross(graphics, (target.getxCoordinate()), (target.getyCoordinate()));
 							drawNumber(graphics, ++number, (target.getxCoordinate()), (target.getyCoordinate()));
 						}

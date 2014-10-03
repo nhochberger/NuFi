@@ -2,7 +2,7 @@ package view;
 
 import hochberger.utilities.application.session.BasicSession;
 import hochberger.utilities.application.session.SessionBasedObject;
-import model.targetdetection.DetailedResults;
+import model.targetdetection.ImageAnalysisResults;
 
 public class ResultDisplayFactory extends SessionBasedObject {
 
@@ -30,7 +30,7 @@ public class ResultDisplayFactory extends SessionBasedObject {
 		}
 
 		@Override
-		public void displayResult(final DetailedResults results) {
+		public void displayResult(final ImageAnalysisResults results) {
 			// do nothing on purpose here
 		}
 	}

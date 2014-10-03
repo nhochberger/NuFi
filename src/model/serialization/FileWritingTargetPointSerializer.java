@@ -10,6 +10,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 
+import model.targetdetection.ImageAnalysisResults;
 import model.targetdetection.TargetPoint;
 
 import com.google.common.collect.Iterables;
@@ -26,23 +27,33 @@ public class FileWritingTargetPointSerializer extends SessionBasedObject impleme
 	}
 
 	@Override
-	public void serialize(final List<TargetPoint> targets) throws IOException {
-		logger().info("Beginning to serialize " + targets.size() + " targets");
+	public void serialize(final ImageAnalysisResults results) throws IOException {
+		int targetAmount = results.getNucleiTargets().size() + results.getNucleoliTargets().size();
+		logger().info("Beginning to serialize " + targetAmount + " targets");
 		BufferedWriter writer = null;
 		try {
 			File destination = getDestinationFile();
 			logger().info("Destination: " + destination.getAbsolutePath());
 			writer = new BufferedWriter(new FileWriter(destination));
-			writeTargets(targets, writer);
+			writeTargets(results, writer);
 		} finally {
 			Closer.close(writer);
 		}
 		logger().info("Serializing finished");
 	}
 
-	private void writeTargets(final List<TargetPoint> targets, final BufferedWriter writer) throws IOException {
+	private void writeTargets(final ImageAnalysisResults results, final BufferedWriter writer) throws IOException {
 		TargetPointFormatter formatter = new TargetPointFormatter();
-		int i = 1;
+		writer.write("# nucleoli targets");
+		writer.newLine();
+		writeFromIndex(results.getNucleoliTargets(), writer, formatter, 1);
+		writer.write("# targets in center of empty nuclei");
+		writer.newLine();
+		writeFromIndex(results.getNucleiTargets(), writer, formatter, results.getNucleoliTargets().size() + 1);
+	}
+
+	private void writeFromIndex(final List<TargetPoint> targets, final BufferedWriter writer, final TargetPointFormatter formatter, final int startIndex) throws IOException {
+		int i = startIndex;
 		for (TargetPoint targetPoint : targets) {
 			logger().info("Serializing target " + i + ": " + targetPoint);
 			writer.write(formatter.format(i, targetPoint));

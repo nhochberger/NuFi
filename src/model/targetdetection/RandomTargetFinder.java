@@ -14,11 +14,9 @@ import controller.configuration.NuFiConfiguration;
 public class RandomTargetFinder extends SessionBasedObject implements TargetFinder {
 
 	private final List<TargetPoint> targets;
-	private final NuFiConfiguration configuration;
 
 	public RandomTargetFinder(final BasicSession session, final NuFiConfiguration configuration) {
 		super(session);
-		this.configuration = configuration;
 		this.targets = new ArrayList<TargetPoint>();
 	}
 
@@ -39,12 +37,7 @@ public class RandomTargetFinder extends SessionBasedObject implements TargetFind
 	}
 
 	@Override
-	public List<TargetPoint> getTargets() {
-		return this.targets;
-	}
-
-	@Override
-	public DetailedResults getDetailedResults() {
-		return new DetailedResults(null, new LinkedList<Polygon>(), this.targets);
+	public ImageAnalysisResults getResults() {
+		return new ImageAnalysisResults(null, new LinkedList<Polygon>(), this.targets, new LinkedList<TargetPoint>());
 	}
 }

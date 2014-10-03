@@ -82,12 +82,12 @@ public class NuFiApplication extends BasicLoggedApplication {
 	}
 
 	private void displayResults() {
-		this.displayer.displayResult(this.targetFinder.getDetailedResults());
+		this.displayer.displayResult(this.targetFinder.getResults());
 	}
 
 	private void serializeTargets() {
 		try {
-			this.serializer.serialize(this.targetFinder.getTargets());
+			this.serializer.serialize(this.targetFinder.getResults());
 		} catch (final IOException e) {
 			getLogger().error("Unable to serialize targets", e);
 		}

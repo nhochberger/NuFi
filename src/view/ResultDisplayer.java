@@ -1,8 +1,8 @@
 package view;
 
-import model.targetdetection.DetailedResults;
+import model.targetdetection.ImageAnalysisResults;
 
 public interface ResultDisplayer {
 
-	public void displayResult(DetailedResults results);
+	public void displayResult(ImageAnalysisResults results);
 }
