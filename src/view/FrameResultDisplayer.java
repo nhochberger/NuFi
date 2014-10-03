@@ -59,7 +59,13 @@ public class FrameResultDisplayer implements ResultDisplayer {
 							graphics.drawPolygon(polygon);
 						}
 						int number = 0;
+						graphics.setColor(Color.RED);
 						for (final TargetPoint target : results.getNucleoliTargets()) {
+							drawCross(graphics, (target.getxCoordinate()), (target.getyCoordinate()));
+							drawNumber(graphics, ++number, (target.getxCoordinate()), (target.getyCoordinate()));
+						}
+						graphics.setColor(Color.GREEN);
+						for (final TargetPoint target : results.getNucleiTargets()) {
 							drawCross(graphics, (target.getxCoordinate()), (target.getyCoordinate()));
 							drawNumber(graphics, ++number, (target.getxCoordinate()), (target.getyCoordinate()));
 						}
@@ -80,14 +86,12 @@ public class FrameResultDisplayer implements ResultDisplayer {
 			}
 
 			private void drawNumber(final Graphics2D graphics, final int number, final int x, final int y) {
-				graphics.setColor(Color.RED);
 				graphics.setFont(graphics.getFont().deriveFont(8f));
 				graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_VRGB);
 				graphics.drawString(String.valueOf(number), x + 2, y - 2);
 			}
 
 			private void drawCross(final Graphics2D graphics, final int x, final int y) {
-				graphics.setColor(Color.RED);
 				graphics.drawLine(x - 2, y, x + 2, y);
 				graphics.drawLine(x, y - 2, x, y + 2);
 			}
