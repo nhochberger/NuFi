@@ -83,20 +83,7 @@ public class ImagejTargetFinder extends SessionBasedObject implements TargetFind
 		logger().info("Result of analysis: " + roiAnalysisResult);
 		logger().info("Found " + roiResults.getCounter() + " targets using basic analysis (threshold was " + workingImage.getProcessor().getAutoThreshold() + ").");
 		if (0 == roiResults.getCounter()) {
-			logger().info("Performing in-depth analysis");
-			final int autoThreshold = workingImage.getProcessor().getAutoThreshold();
-			final int minThreshold = minThreshold(autoThreshold);
-			final int maxThreshold = maxThreshold(autoThreshold);
-			logger().info("Threshold range: [" + minThreshold + "; " + maxThreshold + "]");
-			for (int threshold = maxThreshold; threshold >= minThreshold; threshold--) {
-				workingImage.getProcessor().setThreshold(threshold, 255f, ImageProcessor.RED_LUT);
-				roiAnalyzer.analyze(workingImage);
-				if (0 < roiResults.getCounter()) {
-					logger().info("Found target with threshold: " + threshold + ". Exiting in-depth analysis.");
-					break;
-				}
-			}
-			logger().info("In-depth analysis finished. Found " + roiResults.getCounter() + " targets.");
+			performInDepthAnalysis(workingImage, roiResults, roiAnalyzer);
 		}
 		if (0 == roiResults.getCounter()) {
 			logger().info("Found no targets in ROI " + i + ". Using center of ROI as target.");
@@ -113,6 +100,23 @@ public class ImagejTargetFinder extends SessionBasedObject implements TargetFind
 		final int x = (int) (roiResults.getValue("X", indexOfLargest) + xOffset);
 		final int y = (int) (roiResults.getValue("Y", indexOfLargest) + yOffset);
 		this.targets.add(new TargetPoint(x, y));
+	}
+
+	private void performInDepthAnalysis(final ImagePlus workingImage, final ResultsTable roiResults, final ParticleAnalyzer roiAnalyzer) {
+		logger().info("Performing in-depth analysis");
+		final int autoThreshold = workingImage.getProcessor().getAutoThreshold();
+		final int minThreshold = minThreshold(autoThreshold);
+		final int maxThreshold = maxThreshold(autoThreshold);
+		logger().info("Threshold range: [" + minThreshold + "; " + maxThreshold + "]");
+		for (int threshold = maxThreshold; threshold >= minThreshold; threshold--) {
+			workingImage.getProcessor().setThreshold(threshold, 255f, ImageProcessor.RED_LUT);
+			roiAnalyzer.analyze(workingImage);
+			if (0 < roiResults.getCounter()) {
+				logger().info("Found target with threshold: " + threshold + ". Exiting in-depth analysis.");
+				break;
+			}
+		}
+		logger().info("In-depth analysis finished. Found " + roiResults.getCounter() + " targets.");
 	}
 
 	private int maxThreshold(final int autoThreshold) {
