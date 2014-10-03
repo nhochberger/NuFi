@@ -69,6 +69,10 @@ public class NuFiApplication extends BasicLoggedApplication {
 	public void start() {
 		getLogger().info("Application started");
 		findTargets();
+		postProcessing();
+	}
+
+	private void postProcessing() {
 		serializeTargets();
 		displayResults();
 	}
