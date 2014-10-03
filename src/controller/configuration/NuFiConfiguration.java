@@ -162,6 +162,8 @@ public class NuFiConfiguration {
 
 	public static class MissingConfigurationEntryException extends RuntimeException {
 
+		private static final long serialVersionUID = 3933516086547968600L;
+
 		public MissingConfigurationEntryException(final String key) {
 			super("Configuration lacks desired key: '" + key + "'.");
 		}
