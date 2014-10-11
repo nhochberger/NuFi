@@ -55,7 +55,7 @@ public class ResultSerializerFactory {
 		super();
 		this.session = session;
 		this.configuration = configuration;
-		this.session.getLogger().info("Using Serializer: " + getMode());
+		this.session.getLogger().info("Result serialization mode: " + getMode());
 	}
 
 	public TargetPointSerializer getTargetPointSerializer() {
@@ -66,6 +66,10 @@ public class ResultSerializerFactory {
 	public ResultImageSerializer getImageSerializer() {
 		final SerializationMode mode = getMode();
 		return mode.getResultImageSerializer(this.session, this.configuration);
+	}
+
+	public DistanceSerializer getDistanceSerializer() {
+		return getMode().getDistanceSerializer(this.session, this.configuration);
 	}
 
 	public SerializationMode getMode() {

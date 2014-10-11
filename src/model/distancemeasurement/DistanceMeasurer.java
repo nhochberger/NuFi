@@ -15,7 +15,7 @@ public interface DistanceMeasurer {
 		@Override
 		public double determinMeanDistance(final ImageAnalysisResults results) {
 			// do nothing on purpose
-			return 0d;
+			return -1.0;
 		}
 	}
 }

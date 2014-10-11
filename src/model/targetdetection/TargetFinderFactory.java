@@ -36,13 +36,13 @@ public class TargetFinderFactory {
 	}
 
 	public TargetFinder getTargetFinder() {
-		DetectionMode mode = getMode();
-		this.session.getLogger().info("Using TargetFinder: " + mode);
+		final DetectionMode mode = getMode();
+		this.session.getLogger().info("Target detection mode: " + mode);
 		return mode.getTargetFinder(this.session, this.configuration);
 	}
 
 	public DetectionMode getMode() {
-		String configuredMode = this.session.getProperties().otherProperty(DETECTION_MODE_KEY);
+		final String configuredMode = this.session.getProperties().otherProperty(DETECTION_MODE_KEY);
 		if (REAL_STRING.equalsIgnoreCase(configuredMode)) {
 			return DetectionMode.REAL;
 		}

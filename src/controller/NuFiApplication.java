@@ -12,12 +12,15 @@ import hochberger.utilities.text.Text;
 import hochberger.utilities.timing.Timing;
 
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 
 import model.ResultImageGenerator;
+import model.distancemeasurement.DistanceMeasurer;
+import model.distancemeasurement.DistanceMeasurerFactory;
+import model.serialization.DistanceSerializer;
 import model.serialization.ResultImageSerializer;
 import model.serialization.ResultSerializerFactory;
 import model.serialization.TargetPointSerializer;
+import model.targetdetection.ImageAnalysisResults;
 import model.targetdetection.TargetFinder;
 import model.targetdetection.TargetFinderFactory;
 import view.ResultDisplayFactory;
@@ -30,7 +33,9 @@ public class NuFiApplication extends BasicLoggedApplication {
 	private final TargetFinder targetFinder;
 	private final TargetPointSerializer targetPointserializer;
 	private final ResultImageSerializer resultImageSerializer;
+	private final DistanceSerializer distanceSerializer;
 	private final ResultDisplayer displayer;
+	private final DistanceMeasurer distanceMeasurer;
 
 	public static void main(final String[] args) {
 		setUpLoggingServices(NuFiApplication.class);
@@ -64,8 +69,11 @@ public class NuFiApplication extends BasicLoggedApplication {
 		final TargetFinderFactory targetFinderFactory = new TargetFinderFactory(this.session, configuration);
 		this.targetFinder = targetFinderFactory.getTargetFinder();
 		final ResultSerializerFactory resultSerializerFactory = new ResultSerializerFactory(this.session, configuration);
+		final DistanceMeasurerFactory distanceMeasurerFactory = new DistanceMeasurerFactory(this.session);
+		this.distanceMeasurer = distanceMeasurerFactory.getDistanceMeasurer();
 		this.targetPointserializer = resultSerializerFactory.getTargetPointSerializer();
 		this.resultImageSerializer = resultSerializerFactory.getImageSerializer();
+		this.distanceSerializer = resultSerializerFactory.getDistanceSerializer();
 		final ResultDisplayFactory displayFactory = new ResultDisplayFactory(this.session);
 		this.displayer = displayFactory.getResultDisplayer();
 	}
@@ -78,10 +86,13 @@ public class NuFiApplication extends BasicLoggedApplication {
 	}
 
 	private void postProcessing() {
-		serializeTargets();
-		final BufferedImage resultImage = new ResultImageGenerator().createResultImageFrom(this.targetFinder.getResults());
-		this.displayer.displayResult(resultImage);
+		final ImageAnalysisResults results = this.targetFinder.getResults();
+		this.targetPointserializer.serialize(results);
+		final double meanDistance = this.distanceMeasurer.determinMeanDistance(results);
+		this.distanceSerializer.serializeDistance(meanDistance);
+		final BufferedImage resultImage = new ResultImageGenerator().createResultImageFrom(results);
 		this.resultImageSerializer.serializeResultImage(resultImage);
+		this.displayer.displayResult(resultImage);
 	}
 
 	private void findTargets() {
@@ -90,14 +101,6 @@ public class NuFiApplication extends BasicLoggedApplication {
 		this.targetFinder.findTargets();
 		timing.stop();
 		getLogger().info("Target detection took " + timing.getMilis() + " miliseconds.");
-	}
-
-	private void serializeTargets() {
-		try {
-			this.targetPointserializer.serialize(this.targetFinder.getResults());
-		} catch (final IOException e) {
-			getLogger().error("Unable to serialize targets", e);
-		}
 	}
 
 	@Override

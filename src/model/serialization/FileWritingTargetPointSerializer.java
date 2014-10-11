@@ -24,7 +24,7 @@ public class FileWritingTargetPointSerializer extends SessionBasedObject impleme
 	}
 
 	@Override
-	public void serialize(final ImageAnalysisResults results) throws IOException {
+	public void serialize(final ImageAnalysisResults results) {
 		final int targetAmount = results.getNucleiTargets().size() + results.getNucleoliTargets().size();
 		logger().info("Beginning to serialize " + targetAmount + " targets");
 		BufferedWriter writer = null;
@@ -33,6 +33,8 @@ public class FileWritingTargetPointSerializer extends SessionBasedObject impleme
 			logger().info("Destination: " + destination.getAbsolutePath());
 			writer = new BufferedWriter(new FileWriter(destination));
 			writeTargets(results, writer);
+		} catch (final IOException e) {
+			logger().error("Unable to serialize targets", e);
 		} finally {
 			Closer.close(writer);
 		}

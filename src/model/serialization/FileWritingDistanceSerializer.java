@@ -21,7 +21,7 @@ public class FileWritingDistanceSerializer extends SessionBasedObject implements
 	}
 
 	@Override
-	public void serializeDistance(final double distance) throws IOException {
+	public void serializeDistance(final double distance) {
 		final DestinationFileBuilder fileBuilder = new DestinationFileBuilder(this.configuration);
 		BufferedWriter writer = null;
 		try {
@@ -31,6 +31,8 @@ public class FileWritingDistanceSerializer extends SessionBasedObject implements
 			writer.newLine();
 			writer.write(String.valueOf(distance));
 			writer.newLine();
+		} catch (final IOException e) {
+			logger().error("Unable to serialize mean distance", e);
 		} finally {
 			Closer.close(writer);
 		}
