@@ -12,9 +12,6 @@ import java.util.List;
 
 import model.targetdetection.ImageAnalysisResults;
 import model.targetdetection.TargetPoint;
-
-import com.google.common.collect.Iterables;
-
 import controller.configuration.NuFiConfiguration;
 
 public class FileWritingTargetPointSerializer extends SessionBasedObject implements TargetPointSerializer {
@@ -28,11 +25,11 @@ public class FileWritingTargetPointSerializer extends SessionBasedObject impleme
 
 	@Override
 	public void serialize(final ImageAnalysisResults results) throws IOException {
-		int targetAmount = results.getNucleiTargets().size() + results.getNucleoliTargets().size();
+		final int targetAmount = results.getNucleiTargets().size() + results.getNucleoliTargets().size();
 		logger().info("Beginning to serialize " + targetAmount + " targets");
 		BufferedWriter writer = null;
 		try {
-			File destination = getDestinationFile();
+			final File destination = getDestinationFile("targets", "txt");
 			logger().info("Destination: " + destination.getAbsolutePath());
 			writer = new BufferedWriter(new FileWriter(destination));
 			writeTargets(results, writer);
@@ -43,7 +40,7 @@ public class FileWritingTargetPointSerializer extends SessionBasedObject impleme
 	}
 
 	private void writeTargets(final ImageAnalysisResults results, final BufferedWriter writer) throws IOException {
-		TargetPointFormatter formatter = new TargetPointFormatter();
+		final TargetPointFormatter formatter = new TargetPointFormatter();
 		writer.write("# nucleoli targets");
 		writer.newLine();
 		writeFromIndex(results.getNucleoliTargets(), writer, formatter, 1);
@@ -54,7 +51,7 @@ public class FileWritingTargetPointSerializer extends SessionBasedObject impleme
 
 	private void writeFromIndex(final List<TargetPoint> targets, final BufferedWriter writer, final TargetPointFormatter formatter, final int startIndex) throws IOException {
 		int i = startIndex;
-		for (TargetPoint targetPoint : targets) {
+		for (final TargetPoint targetPoint : targets) {
 			logger().info("Serializing target " + i + ": " + targetPoint);
 			writer.write(formatter.format(i, targetPoint));
 			writer.newLine();
@@ -62,17 +59,7 @@ public class FileWritingTargetPointSerializer extends SessionBasedObject impleme
 		}
 	}
 
-	private File getDestinationFolder() {
-		return new DestinationFolderBuilder().buildDestinationFolderFrom(this.configuration);
-	}
-
-	private File getDestinationFile() {
-		String channel1Filename = this.configuration.getNuFiImage().getChannel1().getName();
-		String channel1Designator = Iterables.get(this.configuration.getChannelDesignators(), 0);
-		String filetype = this.configuration.getImageFiletype();
-		String resultFilename = channel1Filename.replace(channel1Designator, "targets").replace(filetype, "txt");
-		String destinationFileName = getDestinationFolder().getAbsolutePath() + "/" + resultFilename;
-		File destination = new File(destinationFileName);
-		return destination;
+	private File getDestinationFile(final String fileIdentificator, final String filetype) {
+		return new DestinationFileBuilder(this.configuration).buildDestinationFileFrom(fileIdentificator, filetype);
 	}
 }

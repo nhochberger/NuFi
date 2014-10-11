@@ -18,6 +18,11 @@ public class ResultSerializerFactory {
 			public ResultImageSerializer getResultImageSerializer(final BasicSession session, final NuFiConfiguration configuration) {
 				return new FileWritingResultImageSerializer(session, configuration);
 			}
+
+			@Override
+			public DistanceSerializer getDistanceSerializer(final BasicSession session, final NuFiConfiguration configuration) {
+				return new FileWritingDistanceSerializer(session, configuration);
+			}
 		},
 		LOGGED {
 			@Override
@@ -29,11 +34,18 @@ public class ResultSerializerFactory {
 			public ResultImageSerializer getResultImageSerializer(final BasicSession session, final NuFiConfiguration configuration) {
 				return new VoidResultImageSerializer();
 			}
+
+			@Override
+			public DistanceSerializer getDistanceSerializer(final BasicSession session, final NuFiConfiguration configuration) {
+				return new LoggingDistanceSerializer(session);
+			}
 		};
 
 		public abstract TargetPointSerializer getTargetPointSerializer(BasicSession session, NuFiConfiguration configuration);
 
 		public abstract ResultImageSerializer getResultImageSerializer(BasicSession session, NuFiConfiguration configuration);
+
+		public abstract DistanceSerializer getDistanceSerializer(BasicSession session, NuFiConfiguration configuration);
 	}
 
 	private final BasicSession session;
@@ -47,17 +59,17 @@ public class ResultSerializerFactory {
 	}
 
 	public TargetPointSerializer getTargetPointSerializer() {
-		SerializationMode mode = getMode();
+		final SerializationMode mode = getMode();
 		return mode.getTargetPointSerializer(this.session, this.configuration);
 	}
 
 	public ResultImageSerializer getImageSerializer() {
-		SerializationMode mode = getMode();
+		final SerializationMode mode = getMode();
 		return mode.getResultImageSerializer(this.session, this.configuration);
 	}
 
 	public SerializationMode getMode() {
-		String configuredMode = this.session.getProperties().otherProperty(SERIALIZATION_MODE_KEY);
+		final String configuredMode = this.session.getProperties().otherProperty(SERIALIZATION_MODE_KEY);
 		if (SERIAL_STRING.equalsIgnoreCase(configuredMode)) {
 			return SerializationMode.SERIAL;
 		}

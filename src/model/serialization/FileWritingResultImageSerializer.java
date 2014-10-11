@@ -9,8 +9,6 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import com.google.common.collect.Iterables;
-
 import controller.configuration.NuFiConfiguration;
 
 public class FileWritingResultImageSerializer extends SessionBasedObject implements ResultImageSerializer {
@@ -24,14 +22,10 @@ public class FileWritingResultImageSerializer extends SessionBasedObject impleme
 
 	@Override
 	public void serializeResultImage(final BufferedImage image) {
-		File destinationFolder = new DestinationFolderBuilder().buildDestinationFolderFrom(this.configuration);
-		String channel1Filename = this.configuration.getNuFiImage().getChannel1().getName();
-		String channel1Designator = Iterables.get(this.configuration.getChannelDesignators(), 0);
-		String resultFilename = channel1Filename.replace(channel1Designator, "targets");
-		File resultImageFile = new File(destinationFolder, resultFilename);
+		final File destinationFile = new DestinationFileBuilder(this.configuration).buildDestinationFileFrom("targets", "png");
 		try {
-			ImageIO.write(image, this.configuration.getImageFiletype(), resultImageFile);
-		} catch (IOException e) {
+			ImageIO.write(image, this.configuration.getImageFiletype(), destinationFile);
+		} catch (final IOException e) {
 			logger().error("Unable to serialize result image", e);
 		}
 	}

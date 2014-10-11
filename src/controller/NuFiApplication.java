@@ -11,7 +11,6 @@ import hochberger.utilities.eventbus.SimpleEventBus;
 import hochberger.utilities.text.Text;
 import hochberger.utilities.timing.Timing;
 
-import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
@@ -80,8 +79,8 @@ public class NuFiApplication extends BasicLoggedApplication {
 
 	private void postProcessing() {
 		serializeTargets();
-		BufferedImage resultImage = new ResultImageGenerator().createResultImageFrom(this.targetFinder.getResults());
-		displayResults(resultImage);
+		final BufferedImage resultImage = new ResultImageGenerator().createResultImageFrom(this.targetFinder.getResults());
+		this.displayer.displayResult(resultImage);
 		this.resultImageSerializer.serializeResultImage(resultImage);
 	}
 
@@ -91,10 +90,6 @@ public class NuFiApplication extends BasicLoggedApplication {
 		this.targetFinder.findTargets();
 		timing.stop();
 		getLogger().info("Target detection took " + timing.getMilis() + " miliseconds.");
-	}
-
-	private void displayResults(final Image resultImage) {
-		this.displayer.displayResult(resultImage);
 	}
 
 	private void serializeTargets() {
