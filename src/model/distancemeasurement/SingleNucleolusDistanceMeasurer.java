@@ -26,19 +26,29 @@ public class SingleNucleolusDistanceMeasurer extends SessionBasedObject implemen
 					final double roiCenterX = roi.getBounds().getCenterX();
 					final double roiCenterY = roi.getBounds().getCenterY();
 					sumOfDistances += calculateDistance(roiCenterX, roiCenterY, target.getxCoordinate(), target.getyCoordinate());
+
 				}
 			}
 		}
-		return sumOfDistances / targets.size();
+		final double result = sumOfDistances / targets.size();
+		logger().info("Mean distance: " + result);
+		return result;
 	}
 
 	private double calculateDistance(final double x1, final double y1, final double x2, final double y2) {
 		final double deltaX = Math.abs(x1 - x2);
 		final double deltaY = Math.abs(y1 - y2);
-		return Math.sqrt(square(deltaX) + square(deltaY));
+		final double result = Math.sqrt(square(deltaX) + square(deltaY));
+		logger().info("Calculated distance between (" + x1 + "|" + y1 + ") and (" + x2 + "|" + y2 + "): " + result);
+		return result;
 	}
 
 	private double square(final double value) {
 		return value * value;
+	}
+
+	@Override
+	public boolean isReal() {
+		return true;
 	}
 }

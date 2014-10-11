@@ -1,5 +1,7 @@
 package view;
 
+import hochberger.utilities.application.session.BasicSession;
+import hochberger.utilities.application.session.SessionBasedObject;
 import hochberger.utilities.gui.EDTSafeFrame;
 
 import java.awt.BorderLayout;
@@ -12,16 +14,16 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 
-public class FrameResultDisplayer implements ResultDisplayer {
+public class FrameResultDisplayer extends SessionBasedObject implements ResultDisplayer {
 
-	public FrameResultDisplayer() {
-		super();
+	public FrameResultDisplayer(final BasicSession session) {
+		super(session);
 	}
 
 	@Override
 	public void displayResult(final Image resultImage) {
+		logger().info("Building result displayer.");
 		final EDTSafeFrame frame = new EDTSafeFrame("Result") {
-
 			@Override
 			protected void buildUI() {
 				notResizable();
@@ -49,6 +51,8 @@ public class FrameResultDisplayer implements ResultDisplayer {
 				setContentPane(scrollPane);
 			}
 		};
+		logger().info("Showing result displayer.");
 		frame.show();
+		logger().info("Displaying finished.");
 	}
 }

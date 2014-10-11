@@ -18,7 +18,7 @@ public class ResultDisplayFactory extends SessionBasedObject {
 		final String configuredMode = session().getProperties().otherProperty(DISPLAY_MODE);
 		logger().info("Result display mode: " + configuredMode.toUpperCase());
 		if (FRAME_STRING.equalsIgnoreCase(configuredMode)) {
-			return new FrameResultDisplayer();
+			return new FrameResultDisplayer(session());
 		}
 		logger().info("Not showing resulting image.");
 		return new VoidResultDisplayer();

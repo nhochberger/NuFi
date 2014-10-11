@@ -21,12 +21,9 @@ public class ResultImageGenerator {
 	}
 
 	public BufferedImage createResultImageFrom(final ImageAnalysisResults result) {
-		BufferedImage image = createImageFrom(result.getImageFile());
-		Graphics2D graphics = (Graphics2D) image.getGraphics().create();
-		graphics.setColor(Color.YELLOW);
-		for (Polygon polygon : result.getRois()) {
-			graphics.drawPolygon(polygon);
-		}
+		final BufferedImage image = createImageFrom(result.getImageFile());
+		final Graphics2D graphics = (Graphics2D) image.getGraphics().create();
+		drawRois(result, graphics);
 		graphics.setColor(Color.RED);
 		drawTargets(result.getNucleoliTargets(), graphics, 1);
 		graphics.setColor(Color.GREEN);
@@ -35,10 +32,20 @@ public class ResultImageGenerator {
 		return image;
 	}
 
+	private void drawRois(final ImageAnalysisResults result, final Graphics2D oldGgraphics) {
+		final Graphics2D graphics = (Graphics2D) oldGgraphics.create();
+		graphics.setColor(Color.YELLOW);
+		for (final Polygon polygon : result.getRois()) {
+			graphics.drawPolygon(polygon);
+			drawCross(graphics, (int) polygon.getBounds().getCenterX(), (int) polygon.getBounds().getCenterY());
+		}
+		graphics.dispose();
+	}
+
 	private BufferedImage createImageFrom(final File imageFile) {
 		BufferedImage image;
 		try {
-			BufferedImage readImage = ImageIO.read(imageFile);
+			final BufferedImage readImage = ImageIO.read(imageFile);
 			image = new BufferedImage(readImage.getWidth(), readImage.getHeight(), BufferedImage.TYPE_INT_RGB);
 			image.getGraphics().create().drawImage(readImage, 0, 0, null);
 		} catch (final IOException e) {
@@ -47,24 +54,30 @@ public class ResultImageGenerator {
 		return image;
 	}
 
-	private void drawTargets(final List<TargetPoint> targets, final Graphics2D graphics, final int startingIndex) {
-		int i = startingIndex;
-		for (TargetPoint target : targets) {
-			int x = target.getxCoordinate();
-			int y = target.getyCoordinate();
+	private void drawTargets(final List<TargetPoint> targets, final Graphics2D oldGraphics, final int startingIndex) {
+		final Graphics2D graphics = (Graphics2D) oldGraphics.create();
+		final int i = startingIndex;
+		for (final TargetPoint target : targets) {
+			final int x = target.getxCoordinate();
+			final int y = target.getyCoordinate();
 			drawCross(graphics, x, y);
 			drawNumber(graphics, i, x, y);
 		}
+		graphics.dispose();
 	}
 
-	private void drawNumber(final Graphics2D graphics, final int number, final int x, final int y) {
+	private void drawNumber(final Graphics2D oldGraphics, final int number, final int x, final int y) {
+		final Graphics2D graphics = (Graphics2D) oldGraphics.create();
 		graphics.setFont(graphics.getFont().deriveFont(8f));
 		graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_VRGB);
 		graphics.drawString(String.valueOf(number), x + 2, y - 2);
+		graphics.dispose();
 	}
 
-	private void drawCross(final Graphics2D graphics, final int x, final int y) {
+	private void drawCross(final Graphics2D oldGraphics, final int x, final int y) {
+		final Graphics2D graphics = (Graphics2D) oldGraphics.create();
 		graphics.drawLine(x - 2, y, x + 2, y);
 		graphics.drawLine(x, y - 2, x, y + 2);
+		graphics.dispose();
 	}
 }

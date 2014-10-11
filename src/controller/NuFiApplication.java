@@ -36,6 +36,7 @@ public class NuFiApplication extends BasicLoggedApplication {
 	private final DistanceSerializer distanceSerializer;
 	private final ResultDisplayer displayer;
 	private final DistanceMeasurer distanceMeasurer;
+	private final Timing applicationTimer;
 
 	public static void main(final String[] args) {
 		setUpLoggingServices(NuFiApplication.class);
@@ -65,7 +66,9 @@ public class NuFiApplication extends BasicLoggedApplication {
 
 	public NuFiApplication(final ApplicationProperties properties, final NuFiConfiguration configuration) {
 		super();
-		this.session = new BasicSession(properties, new SimpleEventBus(), getLogger());
+		this.applicationTimer = new Timing();
+		this.applicationTimer.start();
+		this.session = new BasicSession(properties, new SimpleEventBus(), logger());
 		final TargetFinderFactory targetFinderFactory = new TargetFinderFactory(this.session, configuration);
 		this.targetFinder = targetFinderFactory.getTargetFinder();
 		final ResultSerializerFactory resultSerializerFactory = new ResultSerializerFactory(this.session, configuration);
@@ -80,31 +83,38 @@ public class NuFiApplication extends BasicLoggedApplication {
 
 	@Override
 	public void start() {
-		getLogger().info("Application started");
+		logger().info("Application started");
 		findTargets();
 		postProcessing();
+		stop();
 	}
 
 	private void postProcessing() {
+		logger().info("Beginning post-processing.");
 		final ImageAnalysisResults results = this.targetFinder.getResults();
 		this.targetPointserializer.serialize(results);
 		final double meanDistance = this.distanceMeasurer.determinMeanDistance(results);
-		this.distanceSerializer.serializeDistance(meanDistance);
+		if (this.distanceMeasurer.isReal()) {
+			this.distanceSerializer.serializeDistance(meanDistance);
+		}
 		final BufferedImage resultImage = new ResultImageGenerator().createResultImageFrom(results);
 		this.resultImageSerializer.serializeResultImage(resultImage);
 		this.displayer.displayResult(resultImage);
+		logger().info("Post-processing finished.");
 	}
 
 	private void findTargets() {
+		logger().info("Beginning target detection.");
 		final Timing timing = new Timing();
 		timing.start();
 		this.targetFinder.findTargets();
 		timing.stop();
-		getLogger().info("Target detection took " + timing.getMilis() + " miliseconds.");
+		logger().info("Target detection took " + timing.getMilis() + " miliseconds.");
 	}
 
 	@Override
 	public void stop() {
-		getLogger().info("Application stopped");
+		this.applicationTimer.stop();
+		logger().info("Application finished. Runtime: " + this.applicationTimer.getMilis() + " miliseconds.");
 	}
 }

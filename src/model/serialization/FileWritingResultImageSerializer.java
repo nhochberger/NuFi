@@ -22,11 +22,14 @@ public class FileWritingResultImageSerializer extends SessionBasedObject impleme
 
 	@Override
 	public void serializeResultImage(final BufferedImage image) {
+		logger().info("Beginning to serialize result image.");
 		final File destinationFile = new DestinationFileBuilder(this.configuration).buildDestinationFileFrom("targets", "png");
+		logger().info("Destination: " + destinationFile.getAbsolutePath());
 		try {
 			ImageIO.write(image, this.configuration.getImageFiletype(), destinationFile);
 		} catch (final IOException e) {
 			logger().error("Unable to serialize result image", e);
 		}
+		logger().info("Serializing finished.");
 	}
 }

@@ -22,10 +22,12 @@ public class FileWritingDistanceSerializer extends SessionBasedObject implements
 
 	@Override
 	public void serializeDistance(final double distance) {
+		logger().info("Serializing mean distance.");
 		final DestinationFileBuilder fileBuilder = new DestinationFileBuilder(this.configuration);
 		BufferedWriter writer = null;
 		try {
 			final File destination = fileBuilder.buildDestinationFileFrom("distance", "txt");
+			logger().info("Destination: " + destination.getAbsolutePath());
 			writer = new BufferedWriter(new FileWriter(destination));
 			writer.write("Mean distance between neuclei centers and targteed nucleoli: ");
 			writer.newLine();
@@ -35,6 +37,7 @@ public class FileWritingDistanceSerializer extends SessionBasedObject implements
 			logger().error("Unable to serialize mean distance", e);
 		} finally {
 			Closer.close(writer);
+			logger().info("Serializing finsihed.");
 		}
 	}
 }

@@ -37,8 +37,8 @@ public class FileWritingTargetPointSerializer extends SessionBasedObject impleme
 			logger().error("Unable to serialize targets", e);
 		} finally {
 			Closer.close(writer);
+			logger().info("Serializing finished.");
 		}
-		logger().info("Serializing finished");
 	}
 
 	private void writeTargets(final ImageAnalysisResults results, final BufferedWriter writer) throws IOException {
