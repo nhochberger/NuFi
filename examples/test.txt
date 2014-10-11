@@ -1,5 +1,5 @@
 # -- general parameters --
-source.folder = examples/origin2
+source.folder = examples/origin
 used.channels = Kanal1, Kanal2, Kanal3
 channel.filetype = png
 
