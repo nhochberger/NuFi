@@ -56,12 +56,13 @@ public class ResultImageGenerator {
 
 	private void drawTargets(final List<TargetPoint> targets, final Graphics2D oldGraphics, final int startingIndex) {
 		final Graphics2D graphics = (Graphics2D) oldGraphics.create();
-		final int i = startingIndex;
+		int i = startingIndex;
 		for (final TargetPoint target : targets) {
 			final int x = target.getxCoordinate();
 			final int y = target.getyCoordinate();
 			drawCross(graphics, x, y);
 			drawNumber(graphics, i, x, y);
+			i++;
 		}
 		graphics.dispose();
 	}
