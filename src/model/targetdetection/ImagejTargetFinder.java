@@ -67,14 +67,14 @@ public class ImagejTargetFinder extends SessionBasedObject implements TargetFind
 		}
 	}
 
-	private void performAnalysisOfRoi(final int i, final RoiManager roiManager, final ImagePlus channel1, final int minSize, final int maxSize) {
-		logger().info("Beginning analysis of roi " + (i + 1));
-		roiManager.select(channel1, i);
-		final Rectangle roiBounds = roiManager.getRoi(i).getBounds();
+	private void performAnalysisOfRoi(final int indexOfRoi, final RoiManager roiManager, final ImagePlus channel1, final int minSize, final int maxSize) {
+		logger().info("Beginning analysis of roi " + (indexOfRoi + 1));
+		roiManager.select(channel1, indexOfRoi);
+		final Rectangle roiBounds = roiManager.getRoi(indexOfRoi).getBounds();
 		final int xOffset = (int) roiBounds.getX();
 		final int yOffset = (int) roiBounds.getY();
 		final ImagePlus workingImage = channel1.duplicate();
-		roiManager.select(workingImage, i);
+		roiManager.select(workingImage, indexOfRoi);
 		workingImage.getProcessor().setAutoThreshold(Method.MaxEntropy, true);
 		final ResultsTable roiResults = new ResultsTable();
 		ParticleAnalyzer.setResultsTable(roiResults);
@@ -88,8 +88,7 @@ public class ImagejTargetFinder extends SessionBasedObject implements TargetFind
 			performInDepthAnalysis(workingImage, roiResults, roiAnalyzer);
 		}
 		if (0 == roiResults.getCounter()) {
-			logger().info("Found no targets in ROI " + i + ". Using center of ROI as target.");
-			this.nucleiTargets.add(new TargetPoint((int) roiBounds.getCenterX(), (int) roiBounds.getCenterY()));
+			setCenterOfNucleusAsTarget(indexOfRoi, roiBounds);
 			return;
 		}
 		int indexOfLargest = 0;
@@ -99,9 +98,21 @@ public class ImagejTargetFinder extends SessionBasedObject implements TargetFind
 			}
 		}
 		logger().info("Found largest target with an area of " + roiResults.getValue("Area", indexOfLargest));
-		final int x = (int) (roiResults.getValue("X", indexOfLargest) + xOffset);
-		final int y = (int) (roiResults.getValue("Y", indexOfLargest) + yOffset);
+		final double largestTargetX = roiResults.getValue("X", indexOfLargest) + xOffset;
+		final double largestTargetY = roiResults.getValue("Y", indexOfLargest) + yOffset;
+		if (!roiManager.getRoi(indexOfRoi).getPolygon().contains(largestTargetX, largestTargetY)) {
+			logger().error("Found target was outside nucleus. Falling back to center of nucleus. (ROI #" + (indexOfRoi + 1) + ")");
+			setCenterOfNucleusAsTarget(indexOfRoi, roiBounds);
+			return;
+		}
+		final int x = (int) (largestTargetX);
+		final int y = (int) (largestTargetY);
 		this.nucleoliTargets.add(new TargetPoint(x, y));
+	}
+
+	private void setCenterOfNucleusAsTarget(final int i, final Rectangle roiBounds) {
+		logger().info("Found no targets in ROI " + i + ". Using center of ROI as target.");
+		this.nucleiTargets.add(new TargetPoint((int) roiBounds.getCenterX(), (int) roiBounds.getCenterY()));
 	}
 
 	private void performInDepthAnalysis(final ImagePlus workingImage, final ResultsTable roiResults, final ParticleAnalyzer roiAnalyzer) {
