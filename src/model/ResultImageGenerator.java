@@ -35,9 +35,12 @@ public class ResultImageGenerator {
 	private void drawRois(final ImageAnalysisResults result, final Graphics2D oldGgraphics) {
 		final Graphics2D graphics = (Graphics2D) oldGgraphics.create();
 		graphics.setColor(Color.YELLOW);
+		int i = 1;
 		for (final Polygon polygon : result.getRois()) {
 			graphics.drawPolygon(polygon);
 			drawCross(graphics, (int) polygon.getBounds().getCenterX(), (int) polygon.getBounds().getCenterY());
+			drawNumber(graphics, i, (int) polygon.getBounds().getMinX(), (int) polygon.getBounds().getMaxY());
+			i++;
 		}
 		graphics.dispose();
 	}
