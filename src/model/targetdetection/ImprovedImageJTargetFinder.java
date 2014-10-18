@@ -86,7 +86,7 @@ public class ImprovedImageJTargetFinder extends SessionBasedObject implements Ta
 		final ImagePlus workingImage = channel1.duplicate();
 		ImagePlus background = workingImage.duplicate();
 		background.getProcessor().blurGaussian(this.configuration.getNucleolusBackgroundBlur());
-		this.calculator.run("", workingImage, background);
+		// this.calculator.run("", workingImage, background);
 
 		workingImage.getProcessor().blurGaussian(this.configuration.getNucleolusThresholdingBlur());
 		roiManager.select(workingImage, indexOfRoi);
