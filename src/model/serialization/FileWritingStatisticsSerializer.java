@@ -8,6 +8,9 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
 
 import model.statistics.StatisticsResult;
 import controller.configuration.NuFiConfiguration;
@@ -27,18 +30,32 @@ public class FileWritingStatisticsSerializer extends SessionBasedObject implemen
 		final DestinationFileBuilder fileBuilder = new DestinationFileBuilder(this.configuration);
 		BufferedWriter writer = null;
 		try {
-			final File destination = fileBuilder.buildDestinationFileFrom("distance", "txt");
+			final File destination = fileBuilder.buildDestinationFileFrom("statistics", "txt");
 			logger().info("Destination: " + destination.getAbsolutePath());
-			writer = new BufferedWriter(new FileWriter(destination));
-			writer.write("Mean distance between neuclei centers and targteed nucleoli: ");
-			writer.newLine();
-			writer.write(String.valueOf(statistcs.meanDistance()));
-			writer.newLine();
+			writer = writeStatistics(statistcs, destination);
 		} catch (final IOException e) {
 			logger().error("Unable to serialize mean distance", e);
 		} finally {
 			Closer.close(writer);
 			logger().info("Serializing finsihed.");
 		}
+	}
+
+	private BufferedWriter writeStatistics(final StatisticsResult statistcs, final File destination) throws IOException {
+		BufferedWriter writer;
+		DecimalFormat doubleFormatter = new DecimalFormat("0.00");
+		doubleFormatter.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.US));
+		writer = new BufferedWriter(new FileWriter(destination));
+		writeLine(writer, "Nuclei count: " + statistcs.nucleiCount());
+		writeLine(writer, "Target count: " + statistcs.targetCount());
+		writeLine(writer, "Nuclei to target ratio: " + doubleFormatter.format(statistcs.nucleoliNucleioliRatio() * 100) + "%");
+		writeLine(writer, "Mean distance between neucleus center and target: " + doubleFormatter.format(statistcs.meanDistance()) + " pixels");
+		writer.newLine();
+		return writer;
+	}
+
+	private void writeLine(final BufferedWriter writer, final String line) throws IOException {
+		writer.write(line);
+		writer.newLine();
 	}
 }

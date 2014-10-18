@@ -48,8 +48,10 @@ public class FullImageStatistics extends SessionBasedObject implements ImageStat
 
 	@Override
 	public StatisticsResult performMeasurements(final ImageAnalysisResults imageAnalysisResults) {
-		// TODO Auto-generated method stub
-		return null;
+		double meanDistance = determinMeanDistance(imageAnalysisResults);
+		int nucleiCount = imageAnalysisResults.getRois().size();
+		int nucleoliCount = imageAnalysisResults.getNucleoliTargets().size();
+		return new RealStatisticsResult(nucleiCount, nucleoliCount, meanDistance);
 	}
 
 	@Override

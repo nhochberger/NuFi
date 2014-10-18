@@ -12,12 +12,12 @@ public class EmptyStatisticsResult implements StatisticsResult {
 	}
 
 	@Override
-	public int nucleoliCount() {
+	public int targetCount() {
 		return -1;
 	}
 
 	@Override
-	public double nucleoNucleioliRatio() {
+	public double nucleoliNucleioliRatio() {
 		return -1.0;
 	}
 

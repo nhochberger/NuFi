@@ -4,9 +4,9 @@ public interface StatisticsResult {
 
 	public int nucleiCount();
 
-	public int nucleoliCount();
+	public int targetCount();
 
-	public double nucleoNucleioliRatio();
+	public double nucleoliNucleioliRatio();
 
 	public double meanDistance();
 
