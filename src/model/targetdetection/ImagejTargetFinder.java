@@ -50,7 +50,7 @@ public class ImagejTargetFinder extends SessionBasedObject implements TargetFind
 		final int measurements = 0;
 		ParticleAnalyzer.setResultsTable(table);
 		ParticleAnalyzer.setRoiManager(manager);
-		final ParticleAnalyzer analyzer = new ParticleAnalyzer(options, measurements, table, 5000d, 25000d);
+		final ParticleAnalyzer analyzer = new ParticleAnalyzer(options, measurements, table, this.configuration.getMinimumNucleusSize(), this.configuration.getMaximumNucleusSize());
 		final boolean analysisResult = analyzer.analyze(channel3);
 		logger().info("Particle analysis result: " + analysisResult);
 		logger().info("Particle analysis found " + manager.getCount() + " ROIs.");

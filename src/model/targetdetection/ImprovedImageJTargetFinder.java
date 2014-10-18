@@ -7,6 +7,7 @@ import ij.ImagePlus;
 import ij.gui.Roi;
 import ij.measure.Measurements;
 import ij.measure.ResultsTable;
+import ij.plugin.ImageCalculator;
 import ij.plugin.filter.ParticleAnalyzer;
 import ij.plugin.frame.RoiManager;
 import ij.process.AutoThresholder.Method;
@@ -21,16 +22,20 @@ import controller.configuration.NuFiConfiguration;
 
 public class ImprovedImageJTargetFinder extends SessionBasedObject implements TargetFinder {
 
+	private final static String DIVIDE = "div";
+
 	private final NuFiConfiguration configuration;
 	private final List<TargetPoint> nucleoliTargets;
 	private final List<TargetPoint> nucleiTargets;
 	private Roi[] rois;
+	private final ImageCalculator calculator;
 
 	public ImprovedImageJTargetFinder(final BasicSession session, final NuFiConfiguration configuration) {
 		super(session);
 		this.configuration = configuration;
 		this.nucleoliTargets = new LinkedList<>();
 		this.nucleiTargets = new LinkedList<>();
+		this.calculator = new ImageCalculator();
 	}
 
 	@Override
@@ -43,6 +48,11 @@ public class ImprovedImageJTargetFinder extends SessionBasedObject implements Ta
 
 	private RoiManager findRoisIn(final NuFiImage image) {
 		final ImagePlus channel3 = IJ.openImage(image.getChannel3().getAbsolutePath());
+		ImagePlus background = channel3.duplicate();
+		background.getProcessor().blurGaussian(this.configuration.getNucleusBackgroundBlur());
+		this.calculator.run(DIVIDE, channel3, background);
+		channel3.getProcessor().multiply(178d);
+		channel3.getProcessor().blurGaussian(this.configuration.getNucleusThresholdingBlur());
 		channel3.getProcessor().setAutoThreshold(Method.Default, true);
 		final RoiManager manager = new RoiManager(true);
 		final ResultsTable table = new ResultsTable();
@@ -50,7 +60,7 @@ public class ImprovedImageJTargetFinder extends SessionBasedObject implements Ta
 		final int measurements = 0;
 		ParticleAnalyzer.setResultsTable(table);
 		ParticleAnalyzer.setRoiManager(manager);
-		final ParticleAnalyzer analyzer = new ParticleAnalyzer(options, measurements, table, 5000d, 25000d);
+		final ParticleAnalyzer analyzer = new ParticleAnalyzer(options, measurements, table, this.configuration.getMinimumNucleusSize(), this.configuration.getMaximumNucleusSize());
 		final boolean analysisResult = analyzer.analyze(channel3);
 		logger().info("Particle analysis result: " + analysisResult);
 		logger().info("Particle analysis found " + manager.getCount() + " ROIs.");
@@ -74,6 +84,11 @@ public class ImprovedImageJTargetFinder extends SessionBasedObject implements Ta
 		final int xOffset = (int) roiBounds.getX();
 		final int yOffset = (int) roiBounds.getY();
 		final ImagePlus workingImage = channel1.duplicate();
+		ImagePlus background = workingImage.duplicate();
+		background.getProcessor().blurGaussian(this.configuration.getNucleolusBackgroundBlur());
+		this.calculator.run("", workingImage, background);
+
+		workingImage.getProcessor().blurGaussian(this.configuration.getNucleolusThresholdingBlur());
 		roiManager.select(workingImage, indexOfRoi);
 		workingImage.getProcessor().setAutoThreshold(Method.MaxEntropy, true);
 		final ResultsTable roiResults = new ResultsTable();

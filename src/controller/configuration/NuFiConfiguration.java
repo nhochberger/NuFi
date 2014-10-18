@@ -41,20 +41,48 @@ public class NuFiConfiguration {
 		return fileBuilder.getNuFiImage();
 	}
 
+	public int getMinimumNucleusSize() {
+		final int defaultSize = Integer.valueOf(getProperty(NuFiConfigurationConstants.NUCLEUS_AVERAGE_SIZE));
+		final double minFactor = Double.valueOf(getProperty(NuFiConfigurationConstants.NUCLEUS_MIN_SIZE_FACTOR));
+		return (int) (defaultSize * minFactor);
+	}
+
+	public int getMaximumNucleusSize() {
+		final int defaultSize = Integer.valueOf(getProperty(NuFiConfigurationConstants.NUCLEUS_AVERAGE_SIZE));
+		final double maxFactor = Double.valueOf(getProperty(NuFiConfigurationConstants.NUCLEUS_MAX_SIZE_FACTOR));
+		return (int) (defaultSize * maxFactor);
+	}
+
 	public int getMinimumNucleolusSize() {
 		final int defaultSize = Integer.valueOf(getProperty(NuFiConfigurationConstants.NUCLEOLUS_AVERAGE_SIZE));
-		final int minPercentage = Integer.valueOf(getProperty(NuFiConfigurationConstants.NUCLEOLUS_MIN_SIZE_PERCENTAGE));
-		return (int) (defaultSize * (minPercentage / 100f));
+		final double minFactor = Double.valueOf(getProperty(NuFiConfigurationConstants.NUCLEOLUS_MIN_SIZE_FACTOR));
+		return (int) (defaultSize * minFactor);
 	}
 
 	public int getMaximumNucleolusSize() {
 		final int defaultSize = Integer.valueOf(getProperty(NuFiConfigurationConstants.NUCLEOLUS_AVERAGE_SIZE));
-		final int maxPercentage = Integer.valueOf(getProperty(NuFiConfigurationConstants.NUCLEOLUS_MAX_SIZE_PERCENTAGE));
-		return (int) (defaultSize * (maxPercentage / 100f));
+		final double maxFactor = Double.valueOf(getProperty(NuFiConfigurationConstants.NUCLEOLUS_MAX_SIZE_FACTOR));
+		return (int) (defaultSize * maxFactor);
 	}
 
 	public int getInDepthRange() {
 		return Integer.valueOf(getProperty(NuFiConfigurationConstants.IN_DEPTH_RANGE));
+	}
+
+	public double getNucleusBackgroundBlur() {
+		return Double.valueOf(getProperty(NuFiConfigurationConstants.NUCLEUS_BACKGROUND_BLUR));
+	}
+
+	public double getNucleusThresholdingBlur() {
+		return Double.valueOf(getProperty(NuFiConfigurationConstants.NUCLEUS_THRESHOLDING_BLUR));
+	}
+
+	public double getNucleolusBackgroundBlur() {
+		return Double.valueOf(getProperty(NuFiConfigurationConstants.NUCLEOLUS_BACKGROUND_BLUR));
+	}
+
+	public double getNucleolusThresholdingBlur() {
+		return Double.valueOf(getProperty(NuFiConfigurationConstants.NUCLEOLUS_THRESHOLDING_BLUR));
 	}
 
 	public String getProperty(final String key) {
