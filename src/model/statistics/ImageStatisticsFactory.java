@@ -5,7 +5,7 @@ import hochberger.utilities.application.session.SessionBasedObject;
 
 public class ImageStatisticsFactory extends SessionBasedObject {
 
-	private static final String MEASUREMENT_MODE_KEY = "distance.measurement.mode";
+	private static final String MEASUREMENT_MODE_KEY = "statistics.mode";
 	private static final String REAL_STRING = "real";
 
 	public ImageStatisticsFactory(final BasicSession session) {
