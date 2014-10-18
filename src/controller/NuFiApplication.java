@@ -14,12 +14,13 @@ import hochberger.utilities.timing.Timing;
 import java.awt.image.BufferedImage;
 
 import model.ResultImageGenerator;
-import model.serialization.StatisticsSerializer;
 import model.serialization.ResultImageSerializer;
 import model.serialization.ResultSerializerFactory;
+import model.serialization.StatisticsSerializer;
 import model.serialization.TargetPointSerializer;
-import model.statistics.ImageStatisticsFactory;
 import model.statistics.ImageStatistics;
+import model.statistics.ImageStatisticsFactory;
+import model.statistics.StatisticsResult;
 import model.targetdetection.ImageAnalysisResults;
 import model.targetdetection.TargetFinder;
 import model.targetdetection.TargetFinderFactory;
@@ -35,7 +36,7 @@ public class NuFiApplication extends BasicLoggedApplication {
 	private final ResultImageSerializer resultImageSerializer;
 	private final StatisticsSerializer distanceSerializer;
 	private final ResultDisplayer displayer;
-	private final ImageStatistics distanceMeasurer;
+	private final ImageStatistics imageStatistics;
 	private final Timing applicationTimer;
 
 	public static void main(final String[] args) {
@@ -73,7 +74,7 @@ public class NuFiApplication extends BasicLoggedApplication {
 		this.targetFinder = targetFinderFactory.getTargetFinder();
 		final ResultSerializerFactory resultSerializerFactory = new ResultSerializerFactory(this.session, configuration);
 		final ImageStatisticsFactory distanceMeasurerFactory = new ImageStatisticsFactory(this.session);
-		this.distanceMeasurer = distanceMeasurerFactory.getDistanceMeasurer();
+		this.imageStatistics = distanceMeasurerFactory.getDistanceMeasurer();
 		this.targetPointserializer = resultSerializerFactory.getTargetPointSerializer();
 		this.resultImageSerializer = resultSerializerFactory.getImageSerializer();
 		this.distanceSerializer = resultSerializerFactory.getDistanceSerializer();
@@ -93,9 +94,9 @@ public class NuFiApplication extends BasicLoggedApplication {
 		logger().info("Beginning post-processing.");
 		final ImageAnalysisResults results = this.targetFinder.getResults();
 		this.targetPointserializer.serialize(results);
-		final double meanDistance = this.distanceMeasurer.determinMeanDistance(results);
-		if (this.distanceMeasurer.isReal()) {
-			this.distanceSerializer.serializeStatistics(meanDistance);
+		final StatisticsResult statistics = this.imageStatistics.performMeasurements(results);
+		if (this.imageStatistics.isReal()) {
+			this.distanceSerializer.serializeStatistics(statistics);
 		}
 		final BufferedImage resultImage = new ResultImageGenerator().createResultImageFrom(results);
 		this.resultImageSerializer.serializeResultImage(resultImage);

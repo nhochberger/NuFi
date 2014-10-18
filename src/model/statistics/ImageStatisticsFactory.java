@@ -18,6 +18,6 @@ public class ImageStatisticsFactory extends SessionBasedObject {
 		if (REAL_STRING.equals(mode)) {
 			return new FullImageStatistics(session());
 		}
-		return new ImageStatistics.DoNothingImageStatistics();
+		return new DoNothingImageStatistics();
 	}
 }

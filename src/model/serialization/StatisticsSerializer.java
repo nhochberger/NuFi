@@ -1,7 +1,8 @@
 package model.serialization;
 
+import model.statistics.StatisticsResult;
 
 public interface StatisticsSerializer {
 
-	public void serializeStatistics(double distance);
+	public void serializeStatistics(StatisticsResult statistics);
 }

@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import model.statistics.StatisticsResult;
 import controller.configuration.NuFiConfiguration;
 
 public class FileWritingStatisticsSerializer extends SessionBasedObject implements StatisticsSerializer {
@@ -21,7 +22,7 @@ public class FileWritingStatisticsSerializer extends SessionBasedObject implemen
 	}
 
 	@Override
-	public void serializeStatistics(final double distance) {
+	public void serializeStatistics(final StatisticsResult statistcs) {
 		logger().info("Serializing mean distance.");
 		final DestinationFileBuilder fileBuilder = new DestinationFileBuilder(this.configuration);
 		BufferedWriter writer = null;
@@ -31,7 +32,7 @@ public class FileWritingStatisticsSerializer extends SessionBasedObject implemen
 			writer = new BufferedWriter(new FileWriter(destination));
 			writer.write("Mean distance between neuclei centers and targteed nucleoli: ");
 			writer.newLine();
-			writer.write(String.valueOf(distance));
+			writer.write(String.valueOf(statistcs.meanDistance()));
 			writer.newLine();
 		} catch (final IOException e) {
 			logger().error("Unable to serialize mean distance", e);

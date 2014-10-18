@@ -16,7 +16,6 @@ public class FullImageStatistics extends SessionBasedObject implements ImageStat
 		super(session);
 	}
 
-	@Override
 	public double determinMeanDistance(final ImageAnalysisResults results) {
 		final List<TargetPoint> targets = new LinkedList<>(results.getNucleoliTargets());
 		double sumOfDistances = 0;
@@ -48,7 +47,14 @@ public class FullImageStatistics extends SessionBasedObject implements ImageStat
 	}
 
 	@Override
+	public StatisticsResult performMeasurements(final ImageAnalysisResults imageAnalysisResults) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
 	public boolean isReal() {
 		return true;
 	}
+
 }
