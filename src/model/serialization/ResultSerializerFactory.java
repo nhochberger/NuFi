@@ -20,8 +20,8 @@ public class ResultSerializerFactory {
 			}
 
 			@Override
-			public DistanceSerializer getDistanceSerializer(final BasicSession session, final NuFiConfiguration configuration) {
-				return new FileWritingDistanceSerializer(session, configuration);
+			public StatisticsSerializer getDistanceSerializer(final BasicSession session, final NuFiConfiguration configuration) {
+				return new FileWritingStatisticsSerializer(session, configuration);
 			}
 		},
 		LOGGED {
@@ -36,8 +36,8 @@ public class ResultSerializerFactory {
 			}
 
 			@Override
-			public DistanceSerializer getDistanceSerializer(final BasicSession session, final NuFiConfiguration configuration) {
-				return new LoggingDistanceSerializer(session);
+			public StatisticsSerializer getDistanceSerializer(final BasicSession session, final NuFiConfiguration configuration) {
+				return new LoggingStatisticsSerializer(session);
 			}
 		};
 
@@ -45,7 +45,7 @@ public class ResultSerializerFactory {
 
 		public abstract ResultImageSerializer getResultImageSerializer(BasicSession session, NuFiConfiguration configuration);
 
-		public abstract DistanceSerializer getDistanceSerializer(BasicSession session, NuFiConfiguration configuration);
+		public abstract StatisticsSerializer getDistanceSerializer(BasicSession session, NuFiConfiguration configuration);
 	}
 
 	private final BasicSession session;
@@ -68,7 +68,7 @@ public class ResultSerializerFactory {
 		return mode.getResultImageSerializer(this.session, this.configuration);
 	}
 
-	public DistanceSerializer getDistanceSerializer() {
+	public StatisticsSerializer getDistanceSerializer() {
 		return getMode().getDistanceSerializer(this.session, this.configuration);
 	}
 

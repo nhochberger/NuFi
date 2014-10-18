@@ -11,17 +11,17 @@ import java.io.IOException;
 
 import controller.configuration.NuFiConfiguration;
 
-public class FileWritingDistanceSerializer extends SessionBasedObject implements DistanceSerializer {
+public class FileWritingStatisticsSerializer extends SessionBasedObject implements StatisticsSerializer {
 
 	private final NuFiConfiguration configuration;
 
-	public FileWritingDistanceSerializer(final BasicSession session, final NuFiConfiguration configuration) {
+	public FileWritingStatisticsSerializer(final BasicSession session, final NuFiConfiguration configuration) {
 		super(session);
 		this.configuration = configuration;
 	}
 
 	@Override
-	public void serializeDistance(final double distance) {
+	public void serializeStatistics(final double distance) {
 		logger().info("Serializing mean distance.");
 		final DestinationFileBuilder fileBuilder = new DestinationFileBuilder(this.configuration);
 		BufferedWriter writer = null;

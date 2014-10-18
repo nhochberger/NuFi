@@ -3,14 +3,14 @@ package model.serialization;
 import hochberger.utilities.application.session.BasicSession;
 import hochberger.utilities.application.session.SessionBasedObject;
 
-public class LoggingDistanceSerializer extends SessionBasedObject implements DistanceSerializer {
+public class LoggingStatisticsSerializer extends SessionBasedObject implements StatisticsSerializer {
 
-	public LoggingDistanceSerializer(final BasicSession session) {
+	public LoggingStatisticsSerializer(final BasicSession session) {
 		super(session);
 	}
 
 	@Override
-	public void serializeDistance(final double distance) {
+	public void serializeStatistics(final double distance) {
 		logger().info("Mean distance between center of nucleus and targeted nucleolus: " + distance + "pixels.");
 	}
 }

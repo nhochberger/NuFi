@@ -1,16 +1,16 @@
-package model.distancemeasurement;
+package model.statistics;
 
 import model.targetdetection.ImageAnalysisResults;
 
-public interface DistanceMeasurer {
+public interface ImageStatistics {
 
 	public double determinMeanDistance(ImageAnalysisResults results);
 
 	public boolean isReal();
 
-	public static class DoNothingDistanceMeasurer implements DistanceMeasurer {
+	public static class DoNothingImageStatistics implements ImageStatistics {
 
-		public DoNothingDistanceMeasurer() {
+		public DoNothingImageStatistics() {
 			super();
 		}
 

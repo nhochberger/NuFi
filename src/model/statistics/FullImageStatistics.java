@@ -1,4 +1,4 @@
-package model.distancemeasurement;
+package model.statistics;
 
 import hochberger.utilities.application.session.BasicSession;
 import hochberger.utilities.application.session.SessionBasedObject;
@@ -10,9 +10,9 @@ import java.util.List;
 import model.targetdetection.ImageAnalysisResults;
 import model.targetdetection.TargetPoint;
 
-public class SingleNucleolusDistanceMeasurer extends SessionBasedObject implements DistanceMeasurer {
+public class FullImageStatistics extends SessionBasedObject implements ImageStatistics {
 
-	public SingleNucleolusDistanceMeasurer(final BasicSession session) {
+	public FullImageStatistics(final BasicSession session) {
 		super(session);
 	}
 
