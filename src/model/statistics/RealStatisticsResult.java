@@ -5,11 +5,13 @@ public class RealStatisticsResult implements StatisticsResult {
 	private final int nucleiCount;
 	private final int nucleoliCount;
 	private final double meanDistance;
+	private final Iterable<Double> distances;
 
-	public RealStatisticsResult(final int nucleiCount, final int nucleoliCount, final double meanDistance) {
+	public RealStatisticsResult(final int nucleiCount, final int nucleoliCount, final Iterable<Double> distances, final double meanDistance) {
 		super();
 		this.nucleiCount = nucleiCount;
 		this.nucleoliCount = nucleoliCount;
+		this.distances = distances;
 		this.meanDistance = meanDistance;
 	}
 
@@ -26,6 +28,10 @@ public class RealStatisticsResult implements StatisticsResult {
 	@Override
 	public double nucleoliNucleioliRatio() {
 		return ((double) this.nucleoliCount) / this.nucleiCount;
+	}
+
+	public Iterable<Double> distances() {
+		return this.distances;
 	}
 
 	@Override

@@ -1,5 +1,7 @@
 package model.statistics;
 
+import java.util.LinkedList;
+
 public class EmptyStatisticsResult implements StatisticsResult {
 
 	public EmptyStatisticsResult() {
@@ -24,5 +26,10 @@ public class EmptyStatisticsResult implements StatisticsResult {
 	@Override
 	public double meanDistance() {
 		return -1;
+	}
+
+	@Override
+	public Iterable<Double> distances() {
+		return new LinkedList<>();
 	}
 }

@@ -3,6 +3,7 @@ package model.serialization;
 import hochberger.utilities.application.session.BasicSession;
 import hochberger.utilities.application.session.SessionBasedObject;
 import hochberger.utilities.files.Closer;
+import hochberger.utilities.text.Text;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -46,16 +47,18 @@ public class FileWritingStatisticsSerializer extends SessionBasedObject implemen
 		DecimalFormat doubleFormatter = new DecimalFormat("0.00");
 		doubleFormatter.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.US));
 		writer = new BufferedWriter(new FileWriter(destination));
-		writeLine(writer, "Nuclei count: " + statistcs.nucleiCount());
-		writeLine(writer, "Target count: " + statistcs.targetCount());
-		writeLine(writer, "Nuclei to target ratio: " + doubleFormatter.format(statistcs.nucleoliNucleioliRatio() * 100) + "%");
-		writeLine(writer, "Mean distance between neucleus center and target: " + doubleFormatter.format(statistcs.meanDistance()) + " pixels");
+		writeLine(writer, "Nuclei count: \n\t" + statistcs.nucleiCount());
+		writeLine(writer, "Target count: \n\t" + statistcs.targetCount());
+		writeLine(writer, "Nuclei to target ratio: \n\t" + doubleFormatter.format(statistcs.nucleoliNucleioliRatio() * 100) + "%");
+		writeLine(writer, "Mean distance: \n\t" + doubleFormatter.format(statistcs.meanDistance()) + " pixels");
+		writeLine(writer, "Distances [pixels]: \n\t" + Text.fromIterable(statistcs.distances(), "\n\t"));
 		writer.newLine();
 		return writer;
 	}
 
 	private void writeLine(final BufferedWriter writer, final String line) throws IOException {
 		writer.write(line);
+		writer.newLine();
 		writer.newLine();
 	}
 }

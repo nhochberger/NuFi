@@ -10,27 +10,26 @@ import java.util.List;
 import model.targetdetection.ImageAnalysisResults;
 import model.targetdetection.TargetPoint;
 
+import com.google.common.collect.Iterables;
+
 public class FullImageStatistics extends SessionBasedObject implements ImageStatistics {
 
 	public FullImageStatistics(final BasicSession session) {
 		super(session);
 	}
 
-	public double determinMeanDistance(final ImageAnalysisResults results) {
+	public Iterable<Double> determineDistances(final ImageAnalysisResults results) {
 		final List<TargetPoint> targets = new LinkedList<>(results.getNucleoliTargets());
-		double sumOfDistances = 0;
+		List<Double> result = new LinkedList<>();
 		for (final Polygon roi : results.getRois()) {
 			for (final TargetPoint target : targets) {
 				if (roi.contains(target.getxCoordinate(), target.getyCoordinate())) {
 					final double roiCenterX = roi.getBounds().getCenterX();
 					final double roiCenterY = roi.getBounds().getCenterY();
-					sumOfDistances += calculateDistance(roiCenterX, roiCenterY, target.getxCoordinate(), target.getyCoordinate());
-
+					result.add(calculateDistance(roiCenterX, roiCenterY, target.getxCoordinate(), target.getyCoordinate()));
 				}
 			}
 		}
-		final double result = sumOfDistances / targets.size();
-		logger().info("Mean distance: " + result);
 		return result;
 	}
 
@@ -46,12 +45,21 @@ public class FullImageStatistics extends SessionBasedObject implements ImageStat
 		return value * value;
 	}
 
+	private double meanValue(final Iterable<Double> values) {
+		double sum = 0;
+		for (Double value : values) {
+			sum += value;
+		}
+		return sum / Iterables.size(values);
+	}
+
 	@Override
 	public StatisticsResult performMeasurements(final ImageAnalysisResults imageAnalysisResults) {
-		double meanDistance = determinMeanDistance(imageAnalysisResults);
 		int nucleiCount = imageAnalysisResults.getRois().size();
 		int nucleoliCount = imageAnalysisResults.getNucleoliTargets().size();
-		return new RealStatisticsResult(nucleiCount, nucleoliCount, meanDistance);
+		Iterable<Double> distances = determineDistances(imageAnalysisResults);
+		double meanDistance = meanValue(distances);
+		return new RealStatisticsResult(nucleiCount, nucleoliCount, distances, meanDistance);
 	}
 
 	@Override

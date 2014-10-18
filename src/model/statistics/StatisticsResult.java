@@ -10,4 +10,6 @@ public interface StatisticsResult {
 
 	public double meanDistance();
 
+	Iterable<Double> distances();
+
 }
