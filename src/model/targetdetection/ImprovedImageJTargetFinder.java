@@ -48,7 +48,7 @@ public class ImprovedImageJTargetFinder extends SessionBasedObject implements Ta
 
 	private RoiManager findRoisIn(final NuFiImage image) {
 		final ImagePlus channel3 = IJ.openImage(image.getChannel3().getAbsolutePath());
-		ImagePlus background = channel3.duplicate();
+		final ImagePlus background = channel3.duplicate();
 		background.getProcessor().blurGaussian(this.configuration.getNucleusBackgroundBlur());
 		this.calculator.run(DIVIDE, channel3, background);
 		channel3.getProcessor().multiply(178d);
@@ -84,12 +84,7 @@ public class ImprovedImageJTargetFinder extends SessionBasedObject implements Ta
 		final int xOffset = (int) roiBounds.getX();
 		final int yOffset = (int) roiBounds.getY();
 		final ImagePlus workingImage = channel1.duplicate();
-		ImagePlus background = workingImage.duplicate();
-		background.getProcessor().blurGaussian(this.configuration.getNucleolusBackgroundBlur());
-		// this.calculator.run("", workingImage, background);
-
 		workingImage.getProcessor().blurGaussian(this.configuration.getNucleolusThresholdingBlur());
-		roiManager.select(workingImage, indexOfRoi);
 		workingImage.getProcessor().setAutoThreshold(Method.MaxEntropy, true);
 		final ResultsTable roiResults = new ResultsTable();
 		ParticleAnalyzer.setResultsTable(roiResults);

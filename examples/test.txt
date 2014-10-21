@@ -10,8 +10,8 @@ channel.filetype = png
 #       nucleolus.min = 0.75
 #       nucleolus.max = 3.0
 nucleus.average = 10000
-nucleus.min.factor = 0.5
-nucleus.max.factor = 2.5
+nucleus.min.factor = 0.4
+nucleus.max.factor = 2.6
 
 nucleolus.average = 100
 nucleolus.min.factor = 0.5
