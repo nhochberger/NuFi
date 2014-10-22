@@ -60,7 +60,8 @@ public class ImprovedImageJTargetFinder extends SessionBasedObject implements Ta
 		final int measurements = 0;
 		ParticleAnalyzer.setResultsTable(table);
 		ParticleAnalyzer.setRoiManager(manager);
-		final ParticleAnalyzer analyzer = new ParticleAnalyzer(options, measurements, table, this.configuration.getMinimumNucleusSize(), this.configuration.getMaximumNucleusSize());
+		final ParticleAnalyzer analyzer = new ParticleAnalyzer(options, measurements, table, this.configuration.getMinimumNucleusSize(), this.configuration.getMaximumNucleusSize(),
+				this.configuration.getNucleusMinCircularity(), 1);
 		final boolean analysisResult = analyzer.analyze(channel3);
 		logger().info("Particle analysis result: " + analysisResult);
 		logger().info("Particle analysis found " + manager.getCount() + " ROIs.");
@@ -162,5 +163,4 @@ public class ImprovedImageJTargetFinder extends SessionBasedObject implements Ta
 	public ImageAnalysisResults getResults() {
 		return new ImageAnalysisResults(this.configuration.getNuFiImage().getChannel1(), RoiToPolygonConverter.convert(this.rois), this.nucleoliTargets, this.nucleiTargets);
 	}
-
 }

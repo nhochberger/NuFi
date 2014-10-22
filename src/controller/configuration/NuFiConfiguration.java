@@ -77,6 +77,10 @@ public class NuFiConfiguration {
 		return Double.valueOf(getProperty(NuFiConfigurationConstants.NUCLEUS_THRESHOLDING_BLUR));
 	}
 
+	public double getNucleusMinCircularity() {
+		return Double.valueOf(getProperty(NuFiConfigurationConstants.NUCLEUS_MIN_CIRCULARITY));
+	}
+
 	public double getNucleolusBackgroundBlur() {
 		return Double.valueOf(getProperty(NuFiConfigurationConstants.NUCLEOLUS_BACKGROUND_BLUR));
 	}
@@ -94,7 +98,7 @@ public class NuFiConfiguration {
 
 	public static NuFiConfiguration createFrom(final String filePath) throws IOException, ConfigurationException {
 		final Properties properties = LoadProperties.fromExtern(filePath);
-		NuFiConfigurationValidator validator = new NuFiConfigurationValidator(properties);
+		final NuFiConfigurationValidator validator = new NuFiConfigurationValidator(properties);
 		validator.validate();
 		return new NuFiConfiguration(properties);
 	}
