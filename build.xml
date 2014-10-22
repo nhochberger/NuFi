@@ -1,9 +1,9 @@
-<project name="HelloWorld" basedir="." default="main">
+<project name="NuFi" basedir="." default="main">
 <property name="dir.src" value="src"/>
 <property name="dir.build" value="build"/>
 <property name="dir.classes" value="${dir.build}/classes"/>
 <property name="dir.jar" value="${dir.build}/jar"/>
-<property name="main-class" value="cc.engeld.HelloWorld"/>
+<property name="main-class" value="controller.NuFiApplication"/>
 <target name="clean">
 <delete dir="${dir.build}"/>
 </target>
