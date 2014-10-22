@@ -12,4 +12,11 @@ public interface StatisticsResult {
 
 	Iterable<Double> distances();
 
+	public Iterable<Double> nucleusAreas();
+
+	public double meanNucleusArea();
+
+	public Iterable<Double> nucleolusAreas();
+
+	public double meanNucleolusArea();
 }

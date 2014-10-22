@@ -20,7 +20,7 @@ public class FullImageStatistics extends SessionBasedObject implements ImageStat
 
 	public Iterable<Double> determineDistances(final ImageAnalysisResults results) {
 		final List<TargetPoint> targets = new LinkedList<>(results.getNucleoliTargets());
-		List<Double> result = new LinkedList<>();
+		final List<Double> result = new LinkedList<>();
 		for (final Polygon roi : results.getRois()) {
 			for (final TargetPoint target : targets) {
 				if (roi.contains(target.getxCoordinate(), target.getyCoordinate())) {
@@ -46,20 +46,28 @@ public class FullImageStatistics extends SessionBasedObject implements ImageStat
 	}
 
 	private double meanValue(final Iterable<Double> values) {
+		final int size = Iterables.size(values);
+		if (0 == size) {
+			return 0;
+		}
 		double sum = 0;
-		for (Double value : values) {
+		for (final Double value : values) {
 			sum += value;
 		}
-		return sum / Iterables.size(values);
+		return sum / size;
 	}
 
 	@Override
 	public StatisticsResult performMeasurements(final ImageAnalysisResults imageAnalysisResults) {
-		int nucleiCount = imageAnalysisResults.getRois().size();
-		int nucleoliCount = imageAnalysisResults.getNucleoliTargets().size();
-		Iterable<Double> distances = determineDistances(imageAnalysisResults);
-		double meanDistance = meanValue(distances);
-		return new RealStatisticsResult(nucleiCount, nucleoliCount, distances, meanDistance);
+		final int nucleiCount = imageAnalysisResults.getRois().size();
+		final int nucleoliCount = imageAnalysisResults.getNucleoliTargets().size();
+		final Iterable<Double> distances = determineDistances(imageAnalysisResults);
+		final double meanDistance = meanValue(distances);
+		final Iterable<Double> nucleusAreas = imageAnalysisResults.getNucleusAreas();
+		final double meanNucleusArea = meanValue(nucleusAreas);
+		final Iterable<Double> nucleolusAreas = imageAnalysisResults.getNucleolusAreas();
+		final double meanNucleolusAreas = meanValue(nucleolusAreas);
+		return new RealStatisticsResult(nucleiCount, nucleoliCount, distances, meanDistance, nucleusAreas, meanNucleusArea, nucleolusAreas, meanNucleolusAreas);
 	}
 
 	@Override

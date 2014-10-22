@@ -22,12 +22,16 @@ import controller.configuration.NuFiConfiguration;
 
 public class ImprovedImageJTargetFinder extends SessionBasedObject implements TargetFinder {
 
+	private static final String AREA = "Area";
+
 	private final static String DIVIDE = "div";
 
 	private final NuFiConfiguration configuration;
 	private final List<TargetPoint> nucleoliTargets;
 	private final List<TargetPoint> nucleiTargets;
 	private Roi[] rois;
+	private double[] nucleusAreas;
+	private final List<double[]> nucleolusAreas;
 	private final ImageCalculator calculator;
 
 	public ImprovedImageJTargetFinder(final BasicSession session, final NuFiConfiguration configuration) {
@@ -36,6 +40,7 @@ public class ImprovedImageJTargetFinder extends SessionBasedObject implements Ta
 		this.nucleoliTargets = new LinkedList<>();
 		this.nucleiTargets = new LinkedList<>();
 		this.calculator = new ImageCalculator();
+		this.nucleolusAreas = new LinkedList<>();
 	}
 
 	@Override
@@ -65,6 +70,7 @@ public class ImprovedImageJTargetFinder extends SessionBasedObject implements Ta
 		final boolean analysisResult = analyzer.analyze(channel3);
 		logger().info("Particle analysis result: " + analysisResult);
 		logger().info("Particle analysis found " + manager.getCount() + " ROIs.");
+		this.nucleusAreas = table.getColumnAsDoubles(table.getColumnIndex(AREA));
 		return manager;
 	}
 
@@ -102,13 +108,14 @@ public class ImprovedImageJTargetFinder extends SessionBasedObject implements Ta
 			setCenterOfNucleusAsTarget(indexOfRoi, roiBounds);
 			return;
 		}
+		this.nucleolusAreas.add(roiResults.getColumnAsDoubles(roiResults.getColumnIndex(AREA)));
 		int indexOfLargest = 0;
 		for (int j = 0; j < roiResults.getCounter(); j++) {
-			if (roiResults.getValue("Area", indexOfLargest) < roiResults.getValue("Area", j)) {
+			if (roiResults.getValue(AREA, indexOfLargest) < roiResults.getValue(AREA, j)) {
 				indexOfLargest = j;
 			}
 		}
-		logger().info("Found largest target with an area of " + roiResults.getValue("Area", indexOfLargest));
+		logger().info("Found largest target with an area of " + roiResults.getValue(AREA, indexOfLargest));
 		final double largestTargetX = roiResults.getValue("X", indexOfLargest) + xOffset;
 		final double largestTargetY = roiResults.getValue("Y", indexOfLargest) + yOffset;
 		if (!roiManager.getRoi(indexOfRoi).getPolygon().contains(largestTargetX, largestTargetY)) {
@@ -161,6 +168,7 @@ public class ImprovedImageJTargetFinder extends SessionBasedObject implements Ta
 
 	@Override
 	public ImageAnalysisResults getResults() {
-		return new ImageAnalysisResults(this.configuration.getNuFiImage().getChannel1(), RoiToPolygonConverter.convert(this.rois), this.nucleoliTargets, this.nucleiTargets);
+		return new ImageAnalysisResults(this.configuration.getNuFiImage().getChannel1(), RoiToPolygonConverter.convert(this.rois), this.nucleoliTargets, this.nucleiTargets, this.nucleusAreas,
+				this.nucleolusAreas);
 	}
 }

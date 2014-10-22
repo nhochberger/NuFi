@@ -26,14 +26,14 @@ public class FileWritingStatisticsSerializer extends SessionBasedObject implemen
 	}
 
 	@Override
-	public void serializeStatistics(final StatisticsResult statistcs) {
+	public void serializeStatistics(final StatisticsResult statistics) {
 		logger().info("Serializing mean distance.");
 		final DestinationFileBuilder fileBuilder = new DestinationFileBuilder(this.configuration);
 		BufferedWriter writer = null;
 		try {
 			final File destination = fileBuilder.buildDestinationFileFrom("statistics", "txt");
 			logger().info("Destination: " + destination.getAbsolutePath());
-			writer = writeStatistics(statistcs, destination);
+			writer = writeStatistics(statistics, destination);
 		} catch (final IOException e) {
 			logger().error("Unable to serialize mean distance", e);
 		} finally {
@@ -42,17 +42,20 @@ public class FileWritingStatisticsSerializer extends SessionBasedObject implemen
 		}
 	}
 
-	private BufferedWriter writeStatistics(final StatisticsResult statistcs, final File destination) throws IOException {
+	private BufferedWriter writeStatistics(final StatisticsResult statistics, final File destination) throws IOException {
 		BufferedWriter writer;
-		DecimalFormat doubleFormatter = new DecimalFormat("0.00");
+		final DecimalFormat doubleFormatter = new DecimalFormat("0.00");
 		doubleFormatter.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.US));
 		writer = new BufferedWriter(new FileWriter(destination));
-		writeLine(writer, "Nuclei count: \n\t" + statistcs.nucleiCount());
-		writeLine(writer, "Target count: \n\t" + statistcs.targetCount());
-		writeLine(writer, "Nuclei to target ratio: \n\t" + doubleFormatter.format(statistcs.nucleoliNucleioliRatio() * 100) + "%");
-		writeLine(writer, "Mean distance: \n\t" + doubleFormatter.format(statistcs.meanDistance()) + " pixels");
-		writeLine(writer, "Distances [pixels]: \n\t" + Text.fromIterable(statistcs.distances(), "\n\t"));
-		writer.newLine();
+		writeLine(writer, "Nuclei count: \n\t" + statistics.nucleiCount());
+		writeLine(writer, "Target count: \n\t" + statistics.targetCount());
+		writeLine(writer, "Nuclei to target ratio: \n\t" + doubleFormatter.format(statistics.nucleoliNucleioliRatio() * 100) + "%");
+		writeLine(writer, "Mean distance: \n\t" + doubleFormatter.format(statistics.meanDistance()) + " pixels");
+		writeLine(writer, "Distances [pixels]: \n\t" + Text.fromIterable(statistics.distances(), "\n\t"));
+		writeLine(writer, "Mean area of detected nuclei: \n\t" + doubleFormatter.format(statistics.meanNucleusArea()) + " pixel²");
+		writeLine(writer, "Nucleus areas [pixels²]: \n\t" + Text.fromIterable(statistics.nucleusAreas(), "\n\t"));
+		writeLine(writer, "Mean area of detected nucleoli: \n\t" + doubleFormatter.format(statistics.meanNucleolusArea()) + " pixel²");
+		writeLine(writer, "Nucleolus areas (of all detected nucleoli) [pixels²]: \n\t" + Text.fromIterable(statistics.nucleolusAreas(), "\n\t"));
 		return writer;
 	}
 

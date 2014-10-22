@@ -21,16 +21,20 @@ import controller.configuration.NuFiConfiguration;
 
 public class ImagejTargetFinder extends SessionBasedObject implements TargetFinder {
 
+	private static final String AREA = "Area";
 	private final NuFiConfiguration configuration;
 	private final List<TargetPoint> nucleoliTargets;
 	private final List<TargetPoint> nucleiTargets;
 	private Roi[] rois;
+	private double[] nucleusAreas;
+	private final List<double[]> nucleolusAreas;
 
 	public ImagejTargetFinder(final BasicSession session, final NuFiConfiguration configuration) {
 		super(session);
 		this.configuration = configuration;
 		this.nucleoliTargets = new LinkedList<>();
 		this.nucleiTargets = new LinkedList<>();
+		this.nucleolusAreas = new LinkedList<>();
 	}
 
 	@Override
@@ -54,6 +58,7 @@ public class ImagejTargetFinder extends SessionBasedObject implements TargetFind
 		final boolean analysisResult = analyzer.analyze(channel3);
 		logger().info("Particle analysis result: " + analysisResult);
 		logger().info("Particle analysis found " + manager.getCount() + " ROIs.");
+		this.nucleusAreas = table.getColumnAsDoubles(table.getColumnIndex(AREA));
 		return manager;
 	}
 
@@ -93,11 +98,11 @@ public class ImagejTargetFinder extends SessionBasedObject implements TargetFind
 		}
 		int indexOfLargest = 0;
 		for (int j = 0; j < roiResults.getCounter(); j++) {
-			if (roiResults.getValue("Area", indexOfLargest) < roiResults.getValue("Area", j)) {
+			if (roiResults.getValue(AREA, indexOfLargest) < roiResults.getValue(AREA, j)) {
 				indexOfLargest = j;
 			}
 		}
-		logger().info("Found largest target with an area of " + roiResults.getValue("Area", indexOfLargest));
+		logger().info("Found largest target with an area of " + roiResults.getValue(AREA, indexOfLargest));
 		final double largestTargetX = roiResults.getValue("X", indexOfLargest) + xOffset;
 		final double largestTargetY = roiResults.getValue("Y", indexOfLargest) + yOffset;
 		if (!roiManager.getRoi(indexOfRoi).getPolygon().contains(largestTargetX, largestTargetY)) {
@@ -150,6 +155,7 @@ public class ImagejTargetFinder extends SessionBasedObject implements TargetFind
 
 	@Override
 	public ImageAnalysisResults getResults() {
-		return new ImageAnalysisResults(this.configuration.getNuFiImage().getChannel1(), RoiToPolygonConverter.convert(this.rois), this.nucleoliTargets, this.nucleiTargets);
+		return new ImageAnalysisResults(this.configuration.getNuFiImage().getChannel1(), RoiToPolygonConverter.convert(this.rois), this.nucleoliTargets, this.nucleiTargets, this.nucleusAreas,
+				this.nucleolusAreas);
 	}
 }
