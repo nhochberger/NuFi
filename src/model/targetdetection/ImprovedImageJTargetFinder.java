@@ -33,6 +33,7 @@ public class ImprovedImageJTargetFinder extends SessionBasedObject implements Ta
 	private double[] nucleusAreas;
 	private final List<double[]> nucleolusAreas;
 	private final ImageCalculator calculator;
+	private final SelectionHelper selectionHelper;
 
 	public ImprovedImageJTargetFinder(final BasicSession session, final NuFiConfiguration configuration) {
 		super(session);
@@ -41,6 +42,7 @@ public class ImprovedImageJTargetFinder extends SessionBasedObject implements Ta
 		this.nucleiTargets = new LinkedList<>();
 		this.calculator = new ImageCalculator();
 		this.nucleolusAreas = new LinkedList<>();
+		this.selectionHelper = new SelectionHelper();
 	}
 
 	@Override
@@ -90,7 +92,8 @@ public class ImprovedImageJTargetFinder extends SessionBasedObject implements Ta
 		final Rectangle roiBounds = roiManager.getRoi(indexOfRoi).getBounds();
 		final int xOffset = (int) roiBounds.getX();
 		final int yOffset = (int) roiBounds.getY();
-		final ImagePlus workingImage = channel1.duplicate();
+		final ImagePlus workingImage = this.selectionHelper.deleteSurrouding(channel1.duplicate(), roiManager.getRoi(indexOfRoi), xOffset, yOffset);
+		roiManager.select(workingImage, indexOfRoi);
 		workingImage.getProcessor().blurGaussian(this.configuration.getNucleolusThresholdingBlur());
 		workingImage.getProcessor().setAutoThreshold(Method.MaxEntropy, true);
 		final ResultsTable roiResults = new ResultsTable();
