@@ -38,6 +38,6 @@ public class RandomTargetFinder extends SessionBasedObject implements TargetFind
 
 	@Override
 	public ImageAnalysisResults getResults() {
-		return new ImageAnalysisResults(null, new LinkedList<Polygon>(), this.targets, new LinkedList<TargetPoint>(), new double[0], new LinkedList<>());
+		return new ImageAnalysisResults(null, new LinkedList<Polygon>(), this.targets, new LinkedList<TargetPoint>(), new double[0], new LinkedList<double[]>());
 	}
 }
