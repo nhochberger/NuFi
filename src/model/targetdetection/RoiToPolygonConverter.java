@@ -15,7 +15,7 @@ public class RoiToPolygonConverter {
 	public static List<Polygon> convert(final Roi[] rois) {
 		final List<Polygon> result = new LinkedList<>();
 		for (final Roi roi : rois) {
-			result.add(roi.getConvexHull());
+			result.add(roi.getPolygon());
 		}
 		return result;
 	}
