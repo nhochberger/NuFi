@@ -19,6 +19,7 @@ public interface NuFiConfigurationConstants {
 	public static final String NUCLEUS_BACKGROUND_BLUR = "nucleus.background.blur";
 	public static final String NUCLEUS_THRESHOLDING_BLUR = "nucleus.thresholding.blur";
 	public static final String NUCLEUS_MIN_CIRCULARITY = "nucleus.min.circularity";
+	public static final String NUCLEUS_BOUNDARY_WIDTH = "nucleus.boundary.width";
 	public static final String NUCLEOLUS_BACKGROUND_BLUR = "nucleolus.background.blur";
 	public static final String NUCLEOLUS_THRESHOLDING_BLUR = "nucleolus.thresholding.blur";
 

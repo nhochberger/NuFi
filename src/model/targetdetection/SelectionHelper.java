@@ -2,6 +2,7 @@ package model.targetdetection;
 
 import ij.ImagePlus;
 import ij.gui.Roi;
+import ij.plugin.RoiEnlarger;
 import ij.process.ImageProcessor;
 
 public class SelectionHelper {
@@ -10,6 +11,10 @@ public class SelectionHelper {
 
 	public SelectionHelper() {
 		super();
+	}
+
+	public Roi shrinkRoi(final Roi roi, final int pixelsToShrink) {
+		return RoiEnlarger.enlarge(roi, pixelsToShrink);
 	}
 
 	public ImagePlus deleteSurrouding(final ImagePlus image, final Roi roi, final int xOffset, final int yOffset) {

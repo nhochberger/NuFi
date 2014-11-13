@@ -23,6 +23,7 @@ indepth.range = 25
 # settings for improved mode
 nucleus.background.blur = 100
 nucleus.thresholding.blur = 3
+nucleus.boundary.width = 5
 
 nucleolus.background.blur = 10
 nucleolus.thresholding.blur = 1

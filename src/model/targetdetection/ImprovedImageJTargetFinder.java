@@ -89,10 +89,12 @@ public class ImprovedImageJTargetFinder extends SessionBasedObject implements Ta
 	private void performAnalysisOfRoi(final int indexOfRoi, final RoiManager roiManager, final ImagePlus channel1, final int minSize, final int maxSize) {
 		logger().info("Beginning analysis of roi " + (indexOfRoi + 1));
 		roiManager.select(channel1, indexOfRoi);
-		final Rectangle roiBounds = roiManager.getRoi(indexOfRoi).getBounds();
+		final Roi currentRoi = roiManager.getRoi(indexOfRoi);
+		final Rectangle roiBounds = currentRoi.getBounds();
 		final int xOffset = (int) roiBounds.getX();
 		final int yOffset = (int) roiBounds.getY();
-		final ImagePlus workingImage = this.selectionHelper.deleteSurrouding(channel1.duplicate(), roiManager.getRoi(indexOfRoi), xOffset, yOffset);
+		final Roi shrinkedRoi = this.selectionHelper.shrinkRoi(currentRoi, this.configuration.getNucleusBoundaryWidth());
+		final ImagePlus workingImage = this.selectionHelper.deleteSurrouding(channel1.duplicate(), shrinkedRoi, xOffset, yOffset);
 		roiManager.select(workingImage, indexOfRoi);
 		workingImage.getProcessor().blurGaussian(this.configuration.getNucleolusThresholdingBlur());
 		workingImage.getProcessor().setAutoThreshold(Method.MaxEntropy, true);
@@ -121,7 +123,7 @@ public class ImprovedImageJTargetFinder extends SessionBasedObject implements Ta
 		logger().info("Found largest target with an area of " + roiResults.getValue(AREA, indexOfLargest));
 		final double largestTargetX = roiResults.getValue("X", indexOfLargest) + xOffset;
 		final double largestTargetY = roiResults.getValue("Y", indexOfLargest) + yOffset;
-		if (!roiManager.getRoi(indexOfRoi).getPolygon().contains(largestTargetX, largestTargetY)) {
+		if (!currentRoi.getPolygon().contains(largestTargetX, largestTargetY)) {
 			logger().error("Found target was outside nucleus. Falling back to center of nucleus. (ROI #" + (indexOfRoi + 1) + ")");
 			setCenterOfNucleusAsTarget(indexOfRoi, roiBounds);
 			return;

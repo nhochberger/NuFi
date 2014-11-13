@@ -81,6 +81,10 @@ public class NuFiConfiguration {
 		return Double.valueOf(getProperty(NuFiConfigurationConstants.NUCLEUS_MIN_CIRCULARITY));
 	}
 
+	public int getNucleusBoundaryWidth() {
+		return Integer.valueOf(getProperty(NuFiConfigurationConstants.NUCLEUS_BOUNDARY_WIDTH));
+	}
+
 	public double getNucleolusBackgroundBlur() {
 		return Double.valueOf(getProperty(NuFiConfigurationConstants.NUCLEOLUS_BACKGROUND_BLUR));
 	}
