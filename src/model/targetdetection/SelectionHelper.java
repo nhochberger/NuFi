@@ -14,7 +14,7 @@ public class SelectionHelper {
 	}
 
 	public Roi shrinkRoi(final Roi roi, final int pixelsToShrink) {
-		return RoiEnlarger.enlarge(roi, pixelsToShrink);
+		return RoiEnlarger.enlarge(roi, -pixelsToShrink);
 	}
 
 	public ImagePlus deleteSurrouding(final ImagePlus image, final Roi roi, final int xOffset, final int yOffset) {
