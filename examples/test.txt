@@ -16,7 +16,8 @@ nucleus.min.circularity = 0.6
 
 nucleolus.average = 100
 nucleolus.min.factor = 0.5
-nucleolus.max.factor = 3.0
+nucleolus.max.factor = 3.5
+nucleolus.min.circularity = 0.9
 
 indepth.range = 25
 

@@ -93,6 +93,10 @@ public class NuFiConfiguration {
 		return Double.valueOf(getProperty(NuFiConfigurationConstants.NUCLEOLUS_THRESHOLDING_BLUR));
 	}
 
+	public double getNucleolusMinCircularity() {
+		return Double.valueOf(getProperty(NuFiConfigurationConstants.NUCLEOLUS_MIN_CIRCULARITY));
+	}
+
 	public String getProperty(final String key) {
 		if (!this.properties.containsKey(key)) {
 			throw new MissingConfigurationEntryException(key);

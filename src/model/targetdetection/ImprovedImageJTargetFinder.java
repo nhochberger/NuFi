@@ -80,13 +80,14 @@ public class ImprovedImageJTargetFinder extends SessionBasedObject implements Ta
 		final ImagePlus channel1 = IJ.openImage(nuFiImage.getChannel1().getAbsolutePath());
 		final int minSize = this.configuration.getMinimumNucleolusSize();
 		final int maxSize = this.configuration.getMaximumNucleolusSize();
+		final double minCircularity = this.configuration.getNucleolusMinCircularity();
 		logger().info("Using minimum nucleolus size of " + minSize + " and maximum nucleolus size of " + maxSize);
 		for (int i = 0; i < roiManager.getCount(); i++) {
-			performAnalysisOfRoi(i, roiManager, channel1, minSize, maxSize);
+			performAnalysisOfRoi(i, roiManager, channel1, minSize, maxSize, minCircularity);
 		}
 	}
 
-	private void performAnalysisOfRoi(final int indexOfRoi, final RoiManager roiManager, final ImagePlus channel1, final int minSize, final int maxSize) {
+	private void performAnalysisOfRoi(final int indexOfRoi, final RoiManager roiManager, final ImagePlus channel1, final int minSize, final int maxSize, final double minCircularity) {
 		logger().info("Beginning analysis of roi " + (indexOfRoi + 1));
 		roiManager.select(channel1, indexOfRoi);
 		final Roi currentRoi = roiManager.getRoi(indexOfRoi);
@@ -102,7 +103,7 @@ public class ImprovedImageJTargetFinder extends SessionBasedObject implements Ta
 		ParticleAnalyzer.setResultsTable(roiResults);
 		final int roiOptions = ParticleAnalyzer.EXCLUDE_EDGE_PARTICLES;
 		final int roiMeasurements = Measurements.CENTROID | Measurements.AREA;
-		final ParticleAnalyzer roiAnalyzer = new ParticleAnalyzer(roiOptions, roiMeasurements, roiResults, minSize, maxSize);
+		final ParticleAnalyzer roiAnalyzer = new ParticleAnalyzer(roiOptions, roiMeasurements, roiResults, minSize, maxSize, minCircularity, 1);
 		final boolean roiAnalysisResult = roiAnalyzer.analyze(workingImage);
 		logger().info("Result of analysis: " + roiAnalysisResult);
 		logger().info("Found " + roiResults.getCounter() + " targets using basic analysis (threshold was " + workingImage.getProcessor().getAutoThreshold() + ").");
