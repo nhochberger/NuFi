@@ -1,4 +1,5 @@
 # -- general parameters --
+#source.folder = F:/workspace/NuFiDocumentation/examples/mai bilder/ex15
 source.folder = examples/origin5
 used.channels = Kanal1, Kanal2, Kanal3
 channel.filetype = png
@@ -10,16 +11,16 @@ channel.filetype = png
 #       nucleolus.min = 0.75
 #       nucleolus.max = 3.0
 nucleus.average = 10000
-nucleus.min.factor = 0.4
-nucleus.max.factor = 2.6
-nucleus.min.circularity = 0.6
+nucleus.min.factor = 0.2
+nucleus.max.factor = 2.0
+nucleus.min.circularity = 0.7
 
 nucleolus.average = 100
 nucleolus.min.factor = 0.5
-nucleolus.max.factor = 3.5
-nucleolus.min.circularity = 0.9
+nucleolus.max.factor = 4
+nucleolus.min.circularity = 0.8
 
-indepth.range = 25
+indepth.range = 30
 
 # settings for improved mode
 nucleus.background.blur = 100
